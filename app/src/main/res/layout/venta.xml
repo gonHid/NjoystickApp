@@ -46,7 +46,7 @@
         app:layout_constraintBottom_toTopOf="@+id/listaProductos"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btnLeerCodigo"
-        app:layout_constraintTop_toBottomOf="@+id/codigoProducto" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewNombreProducto" />
 
     <TextView
         android:id="@+id/textViewPrecio"
@@ -87,7 +87,7 @@
     <Button
         android:id="@+id/btnAddALista"
         android:layout_width="167dp"
-        android:layout_height="43dp"
+        android:layout_height="48dp"
         android:layout_marginTop="11dp"
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="20dp"
