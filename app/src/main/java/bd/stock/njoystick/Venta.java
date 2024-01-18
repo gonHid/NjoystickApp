@@ -15,6 +15,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
+import com.squareup.picasso.Picasso;
 
 import bd.stock.njoystick.databinding.VentaBinding; // Asegúrate de importar la clase correcta
 
@@ -22,6 +23,7 @@ public class Venta extends AppCompatActivity {
 
     VentaBinding binding; // Utiliza la clase de binding correcta
     private ArrayAdapter<String> listaProductosAdapter;
+    private Producto productoStored = null;
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(), result -> {
         if (result.getContents() == null) {
             Toast.makeText(this, "CANCELADO", Toast.LENGTH_SHORT).show();
@@ -40,6 +42,7 @@ public class Venta extends AppCompatActivity {
         binding = VentaBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        binding.imageViewProducto.setImageResource(R.drawable.placeholder_image);
         // Inicializa el ArrayAdapter y asócialo con el ListView
         listaProductosAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
         binding.listaProductos.setAdapter(listaProductosAdapter);
@@ -48,6 +51,13 @@ public class Venta extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 escanear();
+            }
+        });
+
+        binding.btnAddALista.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                enviarALista();
             }
         });
     }
@@ -74,18 +84,11 @@ public class Venta extends AppCompatActivity {
                     Producto producto = dataSnapshot.getValue(Producto.class);
                     if (producto != null) {
                         // Muestra la imagen del producto en el ImageView correspondiente
-                        // Utiliza la URL de la imagen almacenada en el objeto 'producto'
-                        // Puedes usar una biblioteca como Picasso o Glide para cargar la imagen desde la URL
-                        // Picasso.get().load(producto.getUrlImagen()).into(binding.imageViewProducto);
-
-                        // Añade el nombre del producto a la lista
-                        listaProductosAdapter.add(producto.getNombre());
-
-                        // Notifica al adaptador que los datos han cambiado
-                        listaProductosAdapter.notifyDataSetChanged();
-
-                        // Actualiza la interfaz de usuario con la información del producto
-                        actualizarUI(producto);
+                        Picasso.get().load(producto.getUrlImagen()).into(binding.imageViewProducto);
+                        binding.textViewNombreProducto.setText(producto.getNombre());
+                        binding.editTextCantidad.setText("1");
+                        binding.textViewPrecio.setText(getString(R.string.precio_producto, String.valueOf(producto.getPrecio())));
+                        productoStored = producto;
                     }
                 } else {
                     Toast.makeText(getApplicationContext(), "Producto no encontrado", Toast.LENGTH_SHORT).show();
@@ -99,10 +102,22 @@ public class Venta extends AppCompatActivity {
         });
     }
 
-    private void actualizarUI(Producto producto) {
-        // Actualiza la interfaz de usuario con la información del producto
-        binding.textViewNombreProducto.setText(producto.getNombre());
-        binding.textViewPrecio.setText(String.valueOf(producto.getPrecio()));
-        // ... (agrega más actualizaciones según sea necesario)
+    private void enviarALista(){
+        if(productoStored!=null){
+            int cantidad = Integer.parseInt(binding.editTextCantidad.getText().toString());
+            // Añade el nombre del producto a la lista
+            listaProductosAdapter.add(productoStored.getNombre() + " " + productoStored.getMarca() + " cant: "+cantidad);
+
+            // Notifica al adaptador que los datos han cambiado
+            listaProductosAdapter.notifyDataSetChanged();
+            binding.imageViewProducto.setImageResource(R.drawable.placeholder_image);
+            binding.textViewNombreProducto.setText("");
+            binding.editTextCantidad.setText("");
+            binding.textViewPrecio.setText("");
+            productoStored=null;
+        }else{
+            Toast.makeText(getApplicationContext(), "Debe buscar un nuevo producto", Toast.LENGTH_SHORT).show();
+        }
+
     }
 }

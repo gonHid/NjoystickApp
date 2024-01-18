@@ -28,12 +28,13 @@
         android:id="@+id/btnLeerCodigo"
         android:layout_width="161dp"
         android:layout_height="89dp"
+        android:layout_marginTop="22dp"
         android:layout_marginBottom="528dp"
         android:text="SCAN"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewNombreProducto" />
 
     <ImageView
         android:id="@+id/imageViewProducto"
@@ -50,7 +51,7 @@
 
     <TextView
         android:id="@+id/textViewPrecio"
-        android:layout_width="192dp"
+        android:layout_width="182dp"
         android:layout_height="19dp"
         android:text="Precio: $0.00"
         android:textSize="16sp"
@@ -94,8 +95,10 @@
         android:text="Añadir"
         app:layout_constraintBottom_toTopOf="@+id/listaProductos"
         app:layout_constraintEnd_toStartOf="@+id/imageViewProducto"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextCantidad" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextCantidad"
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/btnRealizarVenta"
