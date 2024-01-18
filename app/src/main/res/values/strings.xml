@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Njoystick</string>
+
+    <string-array name="opciones_spinner">
+        <item>Mangas</item>
+        <item>Figuras</item>
+        <item>Videojuegos</item>
+        <item>Otros</item>
+    </string-array>
+</resources>

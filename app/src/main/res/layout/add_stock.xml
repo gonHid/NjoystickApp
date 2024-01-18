@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="20dp"
+    tools:context=".AddStock">
+
+    <EditText
+        android:id="@+id/codigoProducto"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="12dp"
+        android:gravity="center_vertical"
+        android:hint="AQUI SE MOSTRARA EL CODIGO LEIDO"
+        android:textColor="#171414"
+        android:textColorHint="#3A3131"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/btnLeerCodigo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnLeerCodigo"
+        android:layout_width="161dp"
+        android:layout_height="89dp"
+        android:layout_marginBottom="31dp"
+        android:text="SCAN"
+        app:layout_constraintBottom_toTopOf="@+id/nombreProducto"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.514"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <EditText
+        android:id="@+id/nombreProducto"
+        android:layout_width="254dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="180dp"
+        android:ems="10"
+        android:hint="Nombre Producto"
+        android:inputType="text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btn_tomarFoto"
+        android:layout_width="139dp"
+        android:layout_height="93dp"
+        android:layout_marginTop="72dp"
+        android:layout_marginEnd="7dp"
+        android:text="Tomar Foto o Elegir de Galería"
+        app:layout_constraintEnd_toStartOf="@+id/imagenProducto"
+        app:layout_constraintHorizontal_bias="0.04"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cantidad" />
+
+    <ImageView
+        android:id="@+id/imagenProducto"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="34dp"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/placeholder_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spinner" />
+
+    <EditText
+        android:id="@+id/descripcion"
+        android:layout_width="364dp"
+        android:layout_height="75dp"
+        android:layout_marginTop="552dp"
+        android:ems="10"
+        android:gravity="top|start"
+        android:hint="Descripcion"
+        android:inputType="text"
+        android:lines="5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <CheckBox
+        android:id="@+id/isAlternativo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="180dp"
+        android:text="Alternativo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/nombreProducto"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="160dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="24dp"
+        android:entries="@array/opciones_spinner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/isAlternativo" />
+
+    <EditText
+        android:id="@+id/cantidad"
+        android:layout_width="148dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="18dp"
+        android:ems="10"
+        android:hint="Cantidad"
+        android:inputType="number"
+        app:layout_constraintEnd_toStartOf="@+id/imagenProducto"
+        app:layout_constraintHorizontal_bias="0.2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/marcaProducto" />
+
+    <EditText
+        android:id="@+id/precio"
+        android:layout_width="148dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="9dp"
+        android:layout_marginEnd="22dp"
+        android:layout_marginBottom="15dp"
+        android:ems="10"
+        android:hint="Precio"
+        android:inputType="number"
+        app:layout_constraintBottom_toTopOf="@+id/btn_tomarFoto"
+        app:layout_constraintEnd_toStartOf="@+id/imagenProducto"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cantidad"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <EditText
+        android:id="@+id/marcaProducto"
+        android:layout_width="190dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="12dp"
+        android:ems="10"
+        android:hint="Marca"
+        android:inputType="text"
+        app:layout_constraintEnd_toStartOf="@+id/spinner"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/nombreProducto" />
+
+    <Button
+        android:id="@+id/btn_guardarProducto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="GUARDAR"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/descripcion" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
