@@ -14,6 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginTop="12dp"
+        android:editable="false"
         android:gravity="center_vertical"
         android:hint="AQUI SE MOSTRARA EL CODIGO LEIDO"
         android:textColor="#171414"

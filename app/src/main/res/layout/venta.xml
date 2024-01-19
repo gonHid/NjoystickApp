@@ -14,6 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginTop="4dp"
+        android:editable="false"
         android:gravity="center_vertical"
         android:hint="AQUI SE MOSTRARA EL PRODUCTO"
         android:textColor="#171414"
@@ -76,8 +77,8 @@
 
     <ListView
         android:id="@+id/listaProductos"
-        android:layout_width="366dp"
-        android:layout_height="324dp"
+        android:layout_width="371dp"
+        android:layout_height="319dp"
         android:layout_marginTop="240dp"
         android:layout_weight="1"
         app:layout_constraintEnd_toEndOf="parent"
@@ -101,15 +102,28 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <Button
+        android:id="@+id/btnCancelarVenta"
+        android:layout_width="174dp"
+        android:layout_height="53dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="7dp"
+        android:text="Cancelar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_bias="0.156" />
+
+    <Button
         android:id="@+id/btnRealizarVenta"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="174dp"
+        android:layout_height="53dp"
+        android:layout_marginStart="23dp"
         android:layout_marginTop="7dp"
         android:text="Realizar Venta"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/listaProductos" />
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/btnCancelarVenta"
+        app:layout_constraintVertical_bias="0.156" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
