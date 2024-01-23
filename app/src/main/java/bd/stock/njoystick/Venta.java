@@ -1,6 +1,10 @@
 package bd.stock.njoystick;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Base64;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -8,22 +12,29 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.common.reflect.TypeToken;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import bd.stock.njoystick.databinding.VentaBinding; // Asegúrate de importar la clase correcta
 
 public class Venta extends AppCompatActivity {
-
+    private static final String PREFS_NAME = "VentaPrefs";
+    private static final String PREF_VENTA_EN_CURSO = "venta_en_curso";
     VentaBinding binding; // Utiliza la clase de binding correcta
     private ArrayAdapter<String> listaProductosAdapter;
     private ArrayList<ProductoVenta> ControlStock = new ArrayList<>();
@@ -43,9 +54,6 @@ public class Venta extends AppCompatActivity {
         binding = VentaBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        binding = VentaBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
         binding.imageViewProducto.setImageResource(R.drawable.placeholder_image);
         // Inicializa el ArrayAdapter y asócialo con el ListView
         listaProductosAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
@@ -53,8 +61,11 @@ public class Venta extends AppCompatActivity {
 
         binding.btnLeerCodigo.setOnClickListener(view -> escanear());
         binding.btnAddALista.setOnClickListener(view -> enviarALista());
-        binding.btnRealizarVenta.setOnClickListener(view -> procesarCompra());
+        binding.btnRealizarVenta.setOnClickListener(view -> aceptarCompra());
         binding.btnCancelarVenta.setOnClickListener(view -> cancelarCompra());
+        if (ventaEnCurso()) {
+            restaurarControlStock();
+        }
     }
 
     public void escanear() {
@@ -97,12 +108,14 @@ public class Venta extends AppCompatActivity {
         });
     }
 
-    public void procesarCompra(){
+    public void aceptarCompra(){
         ArrayAdapter<String> adapter = (ArrayAdapter<String>) binding.listaProductos.getAdapter();
         adapter.clear();
         adapter.notifyDataSetChanged();
         limpiarCampos();
         ControlStock.clear();
+        guardarEstadoVentaEnCurso(false);
+        Toast.makeText(getApplicationContext(), "Compra confirmada con éxito", Toast.LENGTH_SHORT).show();
     }
 
     public void cancelarCompra() {
@@ -128,7 +141,7 @@ public class Venta extends AppCompatActivity {
 
             // Limpiar la interfaz de usuario
             limpiarCampos();
-
+            guardarEstadoVentaEnCurso(false);
             Toast.makeText(getApplicationContext(), "Venta cancelada", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "Error al cancelar la venta: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -166,7 +179,7 @@ public class Venta extends AppCompatActivity {
                //mover a lista UI
                 listaProductosAdapter.add(productoStored.getNombre() + " " + productoStored.getMarca() + " cant: " + prodAux.cantidad);
                 listaProductosAdapter.notifyDataSetChanged();
-
+                guardarEstadoVentaEnCurso(true);
                 limpiarCampos();
                 productoStored = null;
             } else {
@@ -177,11 +190,59 @@ public class Venta extends AppCompatActivity {
         }
     }
 
+    //control ante posible cierre durante una venta
+    private void guardarEstadoVentaEnCurso(boolean ventaEnCurso) {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(PREF_VENTA_EN_CURSO, ventaEnCurso);
+        editor.apply();
+        guardarControlStock();
+    }
+    private boolean ventaEnCurso() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getBoolean(PREF_VENTA_EN_CURSO, false);
+    }
+
+    private void guardarControlStock() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        // Serializar el ArrayList completo utilizando Gson
+        Gson gson = new Gson();
+        String controlStockJson = gson.toJson(ControlStock);
+
+        // Guardar la cadena JSON en SharedPreferences
+        editor.putString("ControlStock", controlStockJson);
+
+        editor.apply();
+    }
+
+    private void restaurarControlStock() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+
+        // Obtener la cadena JSON almacenada en SharedPreferences
+        String controlStockJson = prefs.getString("ControlStock", "");
+
+        if (!controlStockJson.isEmpty()) {
+            // Deserializar la cadena JSON utilizando Gson
+            Gson gson = new Gson();
+            Type listType = new TypeToken<ArrayList<ProductoVenta>>(){}.getType();
+            ControlStock = gson.fromJson(controlStockJson, listType);
+        } else {
+            ControlStock = new ArrayList<>(); // Si no hay datos almacenados, inicializar un ArrayList vacío
+        }
+    }
+
+
+
     private void limpiarCampos(){
         //Limpiar campos
         binding.imageViewProducto.setImageResource(R.drawable.placeholder_image);
         binding.textViewNombreProducto.setText("");
         binding.editTextCantidad.setText("");
         binding.textViewPrecio.setText("");
+    }
+    public void volverAtras(View view) {
+        finish(); // Cierra la actividad actual y vuelve a la actividad anterior (si existe).
     }
 }
