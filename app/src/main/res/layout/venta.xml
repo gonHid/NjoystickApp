@@ -9,59 +9,59 @@
     android:padding="20dp"
     tools:context=".Venta">
 
-    <ImageButton
-        android:id="@+id/btnBack"
-        android:layout_width="57dp"
-        android:layout_height="58dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_margin="16dp"
-        android:background="?android:attr/selectableItemBackgroundBorderless"
-        android:onClick="volverAtras"
-        android:src="@drawable/icon_goback"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp"
-        tools:ignore="MissingConstraints" />
-
     <EditText
         android:id="@+id/textViewNombreProducto"
         android:layout_width="305dp"
         android:layout_height="51dp"
         android:layout_marginTop="4dp"
-        android:editable="false"
+        android:editable="true"
         android:gravity="center_vertical"
         android:hint="AQUI SE MOSTRARA EL PRODUCTO"
         android:textColor="#171414"
         android:textColorHint="#3A3131"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/btnLeerCodigo"
         android:layout_width="161dp"
-        android:layout_height="89dp"
-        android:layout_marginTop="22dp"
-        android:layout_marginBottom="528dp"
-        android:text="SCAN"
+        android:layout_height="58dp"
+        android:text="ESCANEAR"
+        app:backgroundTint="@null"
+        style="@style/MyButtonStyle"
+        app:layout_constraintBottom_toTopOf="@+id/btnIngresoManual"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewNombreProducto" />
+
+    <Button
+        android:id="@+id/btnIngresoManual"
+        android:layout_width="161dp"
+        android:layout_height="58dp"
+        android:layout_marginTop="56dp"
+        android:layout_marginEnd="8dp"
+        android:text="INGRESAR CODIGO"
+        app:backgroundTint="@null"
+        style="@style/MyButtonStyle"
+        app:layout_constraintBottom_toTopOf="@+id/editTextCantidad"
+        app:layout_constraintEnd_toStartOf="@+id/imageViewProducto"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewNombreProducto" />
 
     <ImageView
         android:id="@+id/imageViewProducto"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="205dp"
+        android:layout_height="219dp"
         android:layout_marginStart="11dp"
-        android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toTopOf="@+id/listaProductos"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btnLeerCodigo"
-        app:layout_constraintTop_toBottomOf="@+id/textViewNombreProducto" />
+        app:layout_constraintStart_toEndOf="@+id/btnLeerCodigo" />
 
     <TextView
         android:id="@+id/textViewPrecio"
@@ -80,18 +80,19 @@
         android:id="@+id/editTextCantidad"
         android:layout_width="166dp"
         android:layout_height="48dp"
-        android:layout_marginTop="7dp"
+        android:layout_marginTop="120dp"
         android:layout_marginEnd="6dp"
         android:hint="Cantidad a vender"
         android:inputType="number"
         app:layout_constraintEnd_toStartOf="@+id/imageViewProducto"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnLeerCodigo" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewNombreProducto" />
 
     <ListView
         android:id="@+id/listaProductos"
-        android:layout_width="371dp"
-        android:layout_height="319dp"
+        android:layout_width="378dp"
+        android:layout_height="261dp"
         android:layout_marginTop="240dp"
         android:layout_weight="1"
         app:layout_constraintEnd_toEndOf="parent"
@@ -107,23 +108,25 @@
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="20dp"
         android:text="Añadir"
+        app:backgroundTint="@null"
+        style="@style/MyButtonStyle"
         app:layout_constraintBottom_toTopOf="@+id/listaProductos"
         app:layout_constraintEnd_toStartOf="@+id/imageViewProducto"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.666"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextCantidad"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.916" />
 
     <Button
         android:id="@+id/btnCancelarVenta"
         android:layout_width="174dp"
         android:layout_height="53dp"
         android:layout_marginStart="4dp"
-        android:layout_marginTop="7dp"
-        android:text="Cancelar"
+        android:text="CANCELAR"
+        app:backgroundTint="@null"
+        style="@style/MyButtonStyle"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintVertical_bias="0.156" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btnRealizarVenta"
@@ -131,12 +134,30 @@
         android:layout_height="53dp"
         android:layout_marginStart="23dp"
         android:layout_marginTop="7dp"
-        android:text="Realizar Venta"
+        android:text="REALIZAR VENTA"
+        app:backgroundTint="@null"
+        style="@style/MyButtonStyle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/btnCancelarVenta"
         app:layout_constraintVertical_bias="0.156" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="400dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="79dp"
+        android:editable="false"
+        android:text="TOTAL VENTA: $"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@+id/btnCancelarVenta"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/listaProductos"
+        app:layout_constraintVertical_bias="1.0" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,6 +6,6 @@
         android:endColor="@color/njoyCeleste"
         android:startColor="@color/njoyAzul" />
     <corners
-        android:radius="20dp"
+        android:radius="90dp"
         />
 </shape>

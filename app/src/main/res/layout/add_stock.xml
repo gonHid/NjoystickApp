@@ -9,41 +9,31 @@
     android:padding="20dp"
     tools:context=".AddStock">
 
-    <ImageButton
-        android:id="@+id/btnBack"
-        android:layout_width="57dp"
-        android:layout_height="58dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_margin="16dp"
-        android:background="?android:attr/selectableItemBackgroundBorderless"
-        android:onClick="volverAtras"
-        android:src="@drawable/icon_goback"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp"
-        tools:ignore="MissingConstraints" />
-
     <EditText
         android:id="@+id/codigoProducto"
-        android:layout_width="305dp"
+        android:layout_width="345dp"
         android:layout_height="48dp"
         android:layout_marginTop="12dp"
         android:editable="true"
         android:gravity="center_vertical"
-        android:hint="AQUI SE MOSTRARA EL CODIGO"
+        android:hint="ESCANEAR O INGRESAR CÓDIGO AQUÍ"
         android:textColor="#171414"
         android:textColorHint="#3A3131"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/btnLeerCodigo"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/btnLeerCodigo"
         android:layout_width="161dp"
         android:layout_height="89dp"
         android:layout_marginBottom="31dp"
-        android:text="SCAN"
+        app:backgroundTint="@null"
+        style="@style/MyButtonStyle"
+        android:text="ESCANEAR"
         app:layout_constraintBottom_toTopOf="@+id/nombreProducto"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.514"
@@ -68,6 +58,8 @@
         android:layout_height="93dp"
         android:layout_marginTop="72dp"
         android:layout_marginEnd="7dp"
+        app:backgroundTint="@null"
+        style="@style/MyButtonStyle"
         android:text="Tomar Foto o Elegir de Galería"
         app:layout_constraintEnd_toStartOf="@+id/imagenProducto"
         app:layout_constraintHorizontal_bias="0.04"
@@ -165,15 +157,30 @@
         app:layout_constraintTop_toBottomOf="@+id/nombreProducto" />
 
     <Button
+        android:id="@+id/btnCancelar"
+        android:layout_width="174dp"
+        android:layout_height="53dp"
+        android:layout_marginTop="9dp"
+        android:layout_marginEnd="19dp"
+        android:text="CANCELAR"
+        app:backgroundTint="@null"
+        style="@style/MyButtonStyle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_guardarProducto"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
         android:id="@+id/btn_guardarProducto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_width="174dp"
+        android:layout_height="53dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="4dp"
         android:text="GUARDAR"
+        app:backgroundTint="@null"
+        style="@style/MyButtonStyle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/descripcion" />
+        app:layout_constraintVertical_bias="1.0" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

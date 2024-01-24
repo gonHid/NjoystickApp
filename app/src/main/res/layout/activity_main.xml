@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         app:backgroundTint="@null"
-        android:background="@drawable/degradado_njoy"
+        style="@style/MyButtonStyle"
         android:text="Login" />
 
 

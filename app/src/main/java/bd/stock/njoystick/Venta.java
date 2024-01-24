@@ -32,7 +32,7 @@ import java.util.List;
 
 import bd.stock.njoystick.databinding.VentaBinding; // Asegúrate de importar la clase correcta
 
-public class Venta extends AppCompatActivity {
+public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInputListener {
     private static final String PREFS_NAME = "VentaPrefs";
     private static final String PREF_VENTA_EN_CURSO = "venta_en_curso";
     VentaBinding binding; // Utiliza la clase de binding correcta
@@ -63,11 +63,20 @@ public class Venta extends AppCompatActivity {
         binding.btnAddALista.setOnClickListener(view -> enviarALista());
         binding.btnRealizarVenta.setOnClickListener(view -> aceptarCompra());
         binding.btnCancelarVenta.setOnClickListener(view -> cancelarCompra());
+        binding.btnIngresoManual.setOnClickListener(view -> abrirDialog());
         if (ventaEnCurso()) {
             restaurarControlStock();
         }
     }
 
+    private void abrirDialog() {
+        InputCodigoDialog dialogFragment = new InputCodigoDialog();
+        dialogFragment.show(getSupportFragmentManager(), "inputDialog");
+    }
+    @Override
+    public void onInputReceived(String userInput) {
+        obtenerInformacionProducto(userInput);
+    }
     public void escanear() {
         ScanOptions options = new ScanOptions();
         options.setDesiredBarcodeFormats(ScanOptions.ALL_CODE_TYPES);
@@ -143,6 +152,7 @@ public class Venta extends AppCompatActivity {
             limpiarCampos();
             guardarEstadoVentaEnCurso(false);
             Toast.makeText(getApplicationContext(), "Venta cancelada", Toast.LENGTH_SHORT).show();
+            finish();
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "Error al cancelar la venta: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
@@ -241,8 +251,5 @@ public class Venta extends AppCompatActivity {
         binding.textViewNombreProducto.setText("");
         binding.editTextCantidad.setText("");
         binding.textViewPrecio.setText("");
-    }
-    public void volverAtras(View view) {
-        finish(); // Cierra la actividad actual y vuelve a la actividad anterior (si existe).
     }
 }

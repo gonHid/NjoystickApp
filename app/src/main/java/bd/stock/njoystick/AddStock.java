@@ -135,6 +135,8 @@ public class AddStock extends AppCompatActivity {
                 }
             }
         });
+
+        binding.btnCancelar.setOnClickListener(view -> finish());
     }
 
     private void dispatchTakePictureIntent() {
