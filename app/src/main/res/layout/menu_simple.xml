@@ -73,7 +73,7 @@
         android:id="@+id/imagenProducto"
         android:layout_width="339dp"
         android:layout_height="413dp"
-        android:layout_marginBottom="372dp"
+        android:layout_marginBottom="368dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -16,11 +16,15 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.journeyapps.barcodescanner.ScanContract;
@@ -56,6 +60,7 @@ public class AddStock extends AppCompatActivity {
             Toast.makeText(this, "CANCELADO", Toast.LENGTH_SHORT).show();
         } else {
             binding.codigoProducto.setText(result.getContents());
+            verificarExistenciaEnFirebase(result.getContents());
         }
     });
 
@@ -169,6 +174,12 @@ public class AddStock extends AppCompatActivity {
                 .addOnSuccessListener(aVoid -> {
                     // Éxito al guardar el producto
                     Toast.makeText(getApplicationContext(), "Producto guardado exitosamente", Toast.LENGTH_SHORT).show();
+                    binding.codigoProducto.setText("");
+                    binding.cantidad.setText("1");
+                    binding.descripcion.setText("");
+                    binding.marcaProducto.setText("");
+                    binding.precio.setText("0");
+                    binding.imagenProducto.setImageResource(R.drawable.placeholder_image);
                 })
                 .addOnFailureListener(e -> {
                     // Error al guardar el producto
@@ -201,6 +212,29 @@ public class AddStock extends AppCompatActivity {
         }
     }
 
+    private void verificarExistenciaEnFirebase(String codigoProducto) {
+        DatabaseReference productosRef = FirebaseDatabase.getInstance().getReference("productos").child(codigoProducto);
+        productosRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // El producto existe en la base de datos
+                    Toast.makeText(getApplicationContext(), "Ya existe, se sobrescribirá el producto", Toast.LENGTH_SHORT).show();
+
+                    // Aquí puedes realizar otras acciones si el producto existe
+                } else {
+                    // El producto no existe en la base de datos
+                    Toast.makeText(getApplicationContext(), "Ingresará un nuevo producto", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getApplicationContext(), "Error al leer datos de Firebase", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     // Obtener la URI de una imagen a partir de un Bitmap
     private Uri getImageUri(Context context, Bitmap bitmap) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -220,5 +254,9 @@ public class AddStock extends AppCompatActivity {
         options.setBarcodeImageEnabled(false);
 
         barcodeLauncher.launch(options);
+    }
+
+    public void volverAtras(View view) {
+        finish(); // Cierra la actividad actual y vuelve a la actividad anterior (si existe).
     }
 }
