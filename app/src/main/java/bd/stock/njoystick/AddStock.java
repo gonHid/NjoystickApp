@@ -7,11 +7,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -47,14 +49,10 @@ public class AddStock extends AppCompatActivity {
     private Spinner spinner;
     private ImageView imageView;
     private Button btnTomarFoto, btnGuardarProducto;
-    private EditText codigoProducto;
-    private EditText nombreProducto;
-    private EditText marcaProducto;
-    private EditText cantidad;
-    private EditText precio;
-    private EditText descripcion;
+    private EditText codigoProducto, nombreProducto, marcaProducto, cantidad, precio,  descripcion;
     private CheckBox alternativo;
     private Uri imagenUri = null;
+    private ProgressBar progressBar;
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(), result -> {
         if (result.getContents() == null) {
             Toast.makeText(this, "CANCELADO", Toast.LENGTH_SHORT).show();
@@ -82,6 +80,7 @@ public class AddStock extends AppCompatActivity {
         precio = findViewById(R.id.precio);
         descripcion = findViewById(R.id.descripcion);
         imageView = findViewById(R.id.imagenProducto);
+        progressBar = findViewById(R.id.progressBar);
         // Obtener las opciones del array de recursos
         String[] opciones = getResources().getStringArray(R.array.opciones_spinner);
 
@@ -118,20 +117,27 @@ public class AddStock extends AppCompatActivity {
                         descripcion.getText().toString().isEmpty()) {
                     Toast.makeText(getApplicationContext(), "Completa todos los campos", Toast.LENGTH_SHORT).show();
                 } else {
-                    // Obtener la referencia del almacenamiento en Firebase
-                    StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("imagenes_productos/" + codigoProducto.getText().toString());
+                    if(imagenUri!=null){
+                        toggleProgressBar(true);
+                        // Obtener la referencia del almacenamiento en Firebase
+                        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("imagenes_productos/" + codigoProducto.getText().toString());
 
-                    // Subir la imagen al Storage
-                    storageRef.putFile(imagenUri)
-                            .addOnSuccessListener(taskSnapshot -> {
-                                // La imagen se ha subido exitosamente, obtén la URL de descarga
-                                obtenerURLDescarga(storageRef, codigoProducto.getText().toString());
-                            })
-                            .addOnFailureListener(e -> {
-                                // Handle unsuccessful uploads
-                                Toast.makeText(getApplicationContext(), "Error al subir la imagen", Toast.LENGTH_SHORT).show();
-                                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                            });
+                        // Subir la imagen al Storage
+                        storageRef.putFile(imagenUri)
+                                .addOnSuccessListener(taskSnapshot -> {
+                                    // La imagen se ha subido exitosamente, obtén la URL de descarga
+                                    obtenerURLDescarga(storageRef, codigoProducto.getText().toString());
+                                })
+                                .addOnFailureListener(e -> {
+                                    // Handle unsuccessful uploads
+                                    Toast.makeText(getApplicationContext(), "Error al subir la imagen", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    toggleProgressBar(false);
+                                });
+                    }else{
+                        Toast.makeText(getApplicationContext(), "Debe añadir una foto", Toast.LENGTH_SHORT).show();
+                    }
+
                 }
             }
         });
@@ -157,12 +163,14 @@ public class AddStock extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     // Handle any errors
+                    toggleProgressBar(false);
                     Toast.makeText(getApplicationContext(), "Error al obtener la URL de descarga", Toast.LENGTH_SHORT).show();
                 });
     }
 
     // Método para guardar los datos del producto en Firebase Realtime Database
     private void guardarProductoEnFirebase(String codigoProducto, String urlDescarga) {
+
         // Crear un objeto Producto con todos los datos, incluida la URL de descarga de la imagen
         Producto producto = new Producto(codigoProducto, nombreProducto.getText().toString(), marcaProducto.getText().toString(),
                 Integer.parseInt( precio.getText().toString()),alternativo.isChecked(),
@@ -182,10 +190,12 @@ public class AddStock extends AppCompatActivity {
                     binding.marcaProducto.setText("");
                     binding.precio.setText("0");
                     binding.imagenProducto.setImageResource(R.drawable.placeholder_image);
+                    toggleProgressBar(false);
                 })
                 .addOnFailureListener(e -> {
                     // Error al guardar el producto
                     Toast.makeText(getApplicationContext(), "Error al guardar el producto", Toast.LENGTH_SHORT).show();
+                    toggleProgressBar(false);
                 });
     }
 
@@ -256,6 +266,18 @@ public class AddStock extends AppCompatActivity {
         options.setBarcodeImageEnabled(false);
 
         barcodeLauncher.launch(options);
+    }
+
+    // Método para mostrar u ocultar el ProgressBar
+    private void toggleProgressBar(boolean show) {
+        if (show) {
+            progressBar.setVisibility(View.VISIBLE);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        } else {
+            progressBar.setVisibility(View.GONE);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        }
     }
 
     public void volverAtras(View view) {
