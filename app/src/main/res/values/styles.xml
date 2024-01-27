@@ -2,11 +2,16 @@
 <resources>
     <style name="MyButtonStyle" parent="Widget.AppCompat.Button">
         <!-- Agrega atributos personalizados según tus necesidades -->
+        <item name="android:backgroundTint">@null</item>
         <item name="android:background">@drawable/degradado_njoy</item>
     </style>
+    <style name="MyButtonStyleB" parent="Widget.AppCompat.Button">
+        <!-- Agrega atributos personalizados según tus necesidades -->
+        <item name="android:backgroundTint">@null</item>
+        <item name="android:background">@drawable/degradado_njoy_b</item>
+    </style>
 
-    <!-- Estilo sin bordes para botones -->
-    <style name="MyButtonStyle.Borderless" parent="MyButtonStyle">
-        <item name="android:background">@android:color/transparent</item>
+    <style name="ButtonStyle" parent="Widget.Material3.Button">
+        <item name="android:textColor">@android:color/white</item>
     </style>
 </resources>
