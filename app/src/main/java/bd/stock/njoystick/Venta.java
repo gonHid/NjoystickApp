@@ -3,8 +3,6 @@ package bd.stock.njoystick;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Base64;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -25,12 +23,8 @@ import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 import com.squareup.picasso.Picasso;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.List;
 
 import bd.stock.njoystick.databinding.VentaBinding; // Asegúrate de importar la clase correcta
 
