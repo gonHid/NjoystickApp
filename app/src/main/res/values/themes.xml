@@ -3,7 +3,8 @@
     <style name="Base.Theme.Njoystick" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-        <item name="buttonStyle">@style/Widget.AppCompat.Button.Borderless</item>
+
+        <item name="buttonStyle">@style/MyButtonStyle</item>
     </style>
 
     <style name="Theme.Njoystick" parent="Base.Theme.Njoystick" />

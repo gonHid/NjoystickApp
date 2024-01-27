@@ -37,9 +37,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:text="Login"
         app:backgroundTint="@null"
-        style="@style/MyButtonStyle"
-        android:text="Login" />
+        style="@style/MyButtonStyle"/>
 
 
 

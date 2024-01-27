@@ -17,8 +17,6 @@
         android:editable="true"
         android:gravity="center_vertical"
         android:hint="ESCANEAR O INGRESAR CÓDIGO AQUÍ"
-        android:textColor="#171414"
-        android:textColorHint="#3A3131"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/btnLeerCodigo"
         app:layout_constraintEnd_toEndOf="parent"
