@@ -3,9 +3,9 @@ package bd.stock.njoystick;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Base64;
-import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -23,12 +23,8 @@ import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 import com.squareup.picasso.Picasso;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.List;
 
 import bd.stock.njoystick.databinding.VentaBinding; // Asegúrate de importar la clase correcta
 
@@ -118,13 +114,43 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
     }
 
     public void aceptarCompra(){
-        ArrayAdapter<String> adapter = (ArrayAdapter<String>) binding.listaProductos.getAdapter();
-        adapter.clear();
-        adapter.notifyDataSetChanged();
-        limpiarCampos();
-        ControlStock.clear();
-        guardarEstadoVentaEnCurso(false);
-        Toast.makeText(getApplicationContext(), "Compra confirmada con éxito", Toast.LENGTH_SHORT).show();
+        ListView listView = findViewById(R.id.listaProductos);
+        ListAdapter adaptadorUnico = listView.getAdapter();
+        if (adaptadorUnico != null) {
+            int itemCount = adaptadorUnico.getCount();
+            if(itemCount==0){
+                if(productoStored!=null){
+                    int cantidadVenta = Integer.parseInt(binding.editTextCantidad.getText().toString());
+
+                    // Asegurar de que haya suficiente stock disponible
+                    if (productoStored.getCantidad() >= cantidadVenta) {
+                        // actualización bdd
+                        DatabaseReference productoRef = FirebaseDatabase.getInstance().getReference("productos").child(productoStored.getCodigo());
+                        int nuevaCantidad = productoStored.getCantidad() - cantidadVenta;
+                        productoRef.child("cantidad").setValue(nuevaCantidad);
+                        productoStored.setCantidad(nuevaCantidad);
+                        limpiarCampos();
+                        productoStored = null;
+                        Toast.makeText(getApplicationContext(), "Compra confirmada con éxito", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Stock insuficiente", Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Toast.makeText(getApplicationContext(), "Debe buscar un nuevo producto", Toast.LENGTH_SHORT).show();
+                }
+            }else{
+                ArrayAdapter<String> adapter = (ArrayAdapter<String>) binding.listaProductos.getAdapter();
+                adapter.clear();
+                adapter.notifyDataSetChanged();
+                limpiarCampos();
+                ControlStock.clear();
+                guardarEstadoVentaEnCurso(false);
+                Toast.makeText(getApplicationContext(), "Compra confirmada con éxito", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(getApplicationContext(), "Adaptador nulo", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     public void cancelarCompra() {
