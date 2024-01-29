@@ -90,11 +90,11 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <CheckBox
-        android:id="@+id/isAlternativo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/isTomoDoble"
+        android:layout_width="114dp"
+        android:layout_height="48dp"
         android:layout_marginTop="180dp"
-        android:text="Alternativo"
+        android:text="Tomo doble"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/nombreProducto"
@@ -107,7 +107,7 @@
         android:layout_marginTop="24dp"
         android:entries="@array/opciones_spinner"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/isAlternativo" />
+        app:layout_constraintTop_toBottomOf="@+id/isTomoDoble" />
 
     <EditText
         android:id="@+id/cantidad"

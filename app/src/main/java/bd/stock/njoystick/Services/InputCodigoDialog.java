@@ -1,4 +1,4 @@
-package bd.stock.njoystick;
+package bd.stock.njoystick.Services;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -11,6 +11,8 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+
+import bd.stock.njoystick.R;
 
 public class InputCodigoDialog extends DialogFragment {
 

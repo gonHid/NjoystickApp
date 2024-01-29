@@ -33,9 +33,10 @@ import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 
+import bd.stock.njoystick.Models.Producto;
+import bd.stock.njoystick.Services.CaptureActivityPortrait;
 import bd.stock.njoystick.databinding.AddStockBinding;
 
 public class AddStock extends AppCompatActivity {
@@ -50,7 +51,7 @@ public class AddStock extends AppCompatActivity {
     private ImageView imageView;
     private Button btnTomarFoto, btnGuardarProducto;
     private EditText codigoProducto, nombreProducto, marcaProducto, cantidad, precio,  descripcion;
-    private CheckBox alternativo;
+    private CheckBox tomoDoble;
     private Uri imagenUri = null;
     private ProgressBar progressBar;
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(), result -> {
@@ -75,7 +76,7 @@ public class AddStock extends AppCompatActivity {
         codigoProducto = findViewById(R.id.codigoProducto);
         nombreProducto = findViewById(R.id.nombreProducto);
         marcaProducto = findViewById(R.id.marcaProducto);
-        alternativo = findViewById(R.id.isAlternativo);
+        tomoDoble = findViewById(R.id.isTomoDoble);
         cantidad = findViewById(R.id.cantidad);
         precio = findViewById(R.id.precio);
         descripcion = findViewById(R.id.descripcion);
@@ -173,7 +174,7 @@ public class AddStock extends AppCompatActivity {
 
         // Crear un objeto Producto con todos los datos, incluida la URL de descarga de la imagen
         Producto producto = new Producto(codigoProducto, nombreProducto.getText().toString(), marcaProducto.getText().toString(),
-                Integer.parseInt( precio.getText().toString()),alternativo.isChecked(),
+                Integer.parseInt( precio.getText().toString()),tomoDoble.isChecked(),
                 Integer.parseInt(cantidad.getText().toString()), descripcion.getText().toString(), spinner.getSelectedItem().toString(), urlDescarga);
 
         // Obtener la referencia a la base de datos en Firebase

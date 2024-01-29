@@ -1,7 +1,8 @@
-package bd.stock.njoystick;
+package bd.stock.njoystick.Models;
 
 public class ProductoVenta {
     public Producto producto;
+
     public int cantidad;
 
     public Producto getProducto() {

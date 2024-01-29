@@ -3,9 +3,11 @@ package bd.stock.njoystick;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Base64;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -23,13 +25,15 @@ import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 import com.squareup.picasso.Picasso;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
+import bd.stock.njoystick.Models.Producto;
+import bd.stock.njoystick.Models.ProductoVenta;
+import bd.stock.njoystick.Models.Ventas;
+import bd.stock.njoystick.Services.CaptureActivityPortrait;
+import bd.stock.njoystick.Services.InputCodigoDialog;
 import bd.stock.njoystick.databinding.VentaBinding; // Asegúrate de importar la clase correcta
 
 public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInputListener {
@@ -38,6 +42,7 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
     VentaBinding binding; // Utiliza la clase de binding correcta
     private ArrayAdapter<String> listaProductosAdapter;
     private ArrayList<ProductoVenta> ControlStock = new ArrayList<>();
+    private Ventas VentasReport;
     private Producto productoStored = null;
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(), result -> {
         if (result.getContents() == null) {
@@ -59,6 +64,7 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
         listaProductosAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
         binding.listaProductos.setAdapter(listaProductosAdapter);
 
+        VentasReport = new Ventas();
         binding.btnLeerCodigo.setOnClickListener(view -> escanear());
         binding.btnAddALista.setOnClickListener(view -> enviarALista());
         binding.btnRealizarVenta.setOnClickListener(view -> aceptarCompra());
@@ -91,6 +97,7 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
     }
 
     private void obtenerInformacionProducto(String codigoProducto) {
+        toggleProgressBar(true);
         DatabaseReference productosRef = FirebaseDatabase.getInstance().getReference("productos").child(codigoProducto);
         productosRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -104,30 +111,84 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
                         binding.editTextCantidad.setText("1");
                         binding.textViewPrecio.setText(getString(R.string.precio_producto, String.valueOf(producto.getPrecio())));
                         productoStored = producto;
+                        toggleProgressBar(false);
                     }
                 } else {
+                    toggleProgressBar(false);
                     Toast.makeText(getApplicationContext(), "Producto no encontrado", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                toggleProgressBar(false);
                 Toast.makeText(getApplicationContext(), "Error al leer datos de Firebase", Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 
     public void aceptarCompra(){
-        ArrayAdapter<String> adapter = (ArrayAdapter<String>) binding.listaProductos.getAdapter();
-        adapter.clear();
-        adapter.notifyDataSetChanged();
-        limpiarCampos();
-        ControlStock.clear();
-        guardarEstadoVentaEnCurso(false);
-        Toast.makeText(getApplicationContext(), "Compra confirmada con éxito", Toast.LENGTH_SHORT).show();
+        toggleProgressBar(true);
+        ListView listView = findViewById(R.id.listaProductos);
+        ListAdapter adaptadorUnico = listView.getAdapter();
+        if (adaptadorUnico != null) {
+            int itemCount = adaptadorUnico.getCount();
+            if(itemCount==0){
+                if(productoStored!=null){
+                    int cantidadVenta = Integer.parseInt(binding.editTextCantidad.getText().toString());
+
+                    // Asegurar de que haya suficiente stock disponible
+                    if (productoStored.getCantidad() >= cantidadVenta) {
+                        // actualización bdd
+                        DatabaseReference productoRef = FirebaseDatabase.getInstance().getReference("productos").child(productoStored.getCodigo());
+                        int nuevaCantidad = productoStored.getCantidad() - cantidadVenta;
+                        productoRef.child("cantidad").setValue(nuevaCantidad);
+                        productoStored.setCantidad(nuevaCantidad);
+                        limpiarCampos();
+                        ProductoVenta aux = new ProductoVenta();
+                        aux.producto = productoStored;
+                        aux.cantidad = cantidadVenta;
+                        ControlStock.add(aux);
+                        Gson gson = new Gson();
+                        String productosJson = gson.toJson(ControlStock);
+                        VentasReport.setListaProductosVenta(productosJson);
+                        VentasReport.setMontoTotal(cantidadVenta * productoStored.getPrecio());
+                        productoStored = null;
+                        Toast.makeText(getApplicationContext(), "Compra confirmada con éxito", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Stock insuficiente", Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Toast.makeText(getApplicationContext(), "Debe buscar un nuevo producto", Toast.LENGTH_SHORT).show();
+                }
+            }else{
+                ArrayAdapter<String> adapter = (ArrayAdapter<String>) binding.listaProductos.getAdapter();
+                adapter.clear();
+                adapter.notifyDataSetChanged();
+                limpiarCampos();
+                Gson gson = new Gson();
+                String productosJson = gson.toJson(ControlStock);
+                VentasReport.setListaProductosVenta(productosJson);
+                ControlStock.clear();
+                guardarEstadoVentaEnCurso(false);
+                Toast.makeText(getApplicationContext(), "Compra confirmada con éxito", Toast.LENGTH_SHORT).show();
+            }
+
+            VentasReport.setFecha(new Date());
+            DatabaseReference ventasRef = FirebaseDatabase.getInstance().getReference("ventas");
+            String nuevaVentaKey = ventasRef.push().getKey();
+            ventasRef.child(nuevaVentaKey).setValue(VentasReport);
+
+
+        } else {
+            Toast.makeText(getApplicationContext(), "Adaptador nulo", Toast.LENGTH_SHORT).show();
+        }
+        toggleProgressBar(false);
     }
 
     public void cancelarCompra() {
+        toggleProgressBar(true);
         try {
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("productos");
 
@@ -146,6 +207,8 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
             ArrayAdapter<String> adapter = (ArrayAdapter<String>) binding.listaProductos.getAdapter();
             adapter.clear();
             adapter.notifyDataSetChanged();
+
+
             ControlStock.clear();
 
             // Limpiar la interfaz de usuario
@@ -156,8 +219,10 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "Error al cancelar la venta: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
+        toggleProgressBar(false);
     }
     private void enviarALista(){
+        toggleProgressBar(true);
         if(productoStored!=null){
             int cantidadVenta = Integer.parseInt(binding.editTextCantidad.getText().toString());
 
@@ -166,6 +231,8 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
                 // actualización bdd
                 DatabaseReference productoRef = FirebaseDatabase.getInstance().getReference("productos").child(productoStored.getCodigo());
                 int nuevaCantidad = productoStored.getCantidad() - cantidadVenta;
+                VentasReport.setMontoTotal( VentasReport.getMontoTotal() + (cantidadVenta * productoStored.getPrecio()) );
+                binding.totalVenta.setText("TOTAL VENTA: $"+VentasReport.getMontoTotal());
                 productoRef.child("cantidad").setValue(nuevaCantidad);
                 productoStored.setCantidad(nuevaCantidad);
                 ProductoVenta prodAux = new ProductoVenta();
@@ -198,6 +265,7 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
         }else{
             Toast.makeText(getApplicationContext(), "Debe buscar un nuevo producto", Toast.LENGTH_SHORT).show();
         }
+        toggleProgressBar(false);
     }
 
     //control ante posible cierre durante una venta
@@ -244,6 +312,17 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
     }
 
 
+    private void toggleProgressBar(boolean show) {
+        if (show) {
+            binding.progressBar.bringToFront();
+            binding.progressBar.setVisibility(View.VISIBLE);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        } else {
+            binding.progressBar.setVisibility(View.GONE);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        }
+    }
 
     private void limpiarCampos(){
         //Limpiar campos

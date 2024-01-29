@@ -23,7 +23,7 @@ public class MenuSimple extends AppCompatActivity{
         Button buttonGoToVenta = findViewById(R.id.changeVenta);
         Button buttonGoToStock = findViewById(R.id.changeVerStock);
         Button buttonGoToAnnadir = findViewById(R.id.changeAnnadirStock);
-        Button buttonGoToReport = findViewById(R.id.changeReportarBug);
+        Button buttonGoToReportesVentas = findViewById(R.id.changeReportesVentas);
         SwitchMaterial switchModoNocturno = findViewById(R.id.switchTema);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -48,6 +48,15 @@ public class MenuSimple extends AppCompatActivity{
             public void onClick(View v) {
                 // Ir a la actividad Venta
                 Intent intent = new Intent(MenuSimple.this, AddStock.class);
+                startActivity(intent);
+            }
+        });
+
+        buttonGoToReportesVentas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Ir a la actividad Venta
+                Intent intent = new Intent(MenuSimple.this, ReporteVentas.class);
                 startActivity(intent);
             }
         });
