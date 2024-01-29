@@ -3,22 +3,22 @@ package bd.stock.njoystick.Models;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class Ventas {// para guardar en firebase la informacion de las ventas realizadas
-    private String listaProductosVenta;
+public class Ventas {
+    private ArrayList<ProductoVenta> listaProductosVenta;
     private Date fecha;
     private int MontoTotal;
 
-    public Ventas(String listaProductosVenta, Date fecha, int montoTotal) {
+    public Ventas(ArrayList<ProductoVenta> listaProductosVenta, Date fecha, int montoTotal) {
         this.listaProductosVenta = listaProductosVenta;
         this.fecha = fecha;
         MontoTotal = montoTotal;
     }
 
-    public String getListaProductosVenta() {
+    public ArrayList<ProductoVenta> getListaProductosVenta() {
         return listaProductosVenta;
     }
 
-    public void setListaProductosVenta(String listaProductosVenta) {
+    public void setListaProductosVenta(ArrayList<ProductoVenta> listaProductosVenta) {
         this.listaProductosVenta = listaProductosVenta;
     }
 
@@ -28,15 +28,16 @@ public class Ventas {// para guardar en firebase la informacion de las ventas re
     public Date getFecha() {
         return fecha;
     }
+
     public void setFecha(Date fecha) {
         this.fecha = fecha;
     }
 
     public int getMontoTotal() {
-        return    MontoTotal;
+        return MontoTotal;
     }
 
-    public void setMontoTotal(int mmontoTotal) {
-        MontoTotal = mmontoTotal;
+    public void setMontoTotal(int montoTotal) {
+        MontoTotal = montoTotal;
     }
 }

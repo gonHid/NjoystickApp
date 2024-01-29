@@ -27,7 +27,9 @@ import com.squareup.picasso.Picasso;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import bd.stock.njoystick.Models.Producto;
 import bd.stock.njoystick.Models.ProductoVenta;
@@ -128,14 +130,16 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
 
     }
 
-    public void aceptarCompra(){
+    public void aceptarCompra() {
         toggleProgressBar(true);
         ListView listView = findViewById(R.id.listaProductos);
         ListAdapter adaptadorUnico = listView.getAdapter();
+
         if (adaptadorUnico != null) {
             int itemCount = adaptadorUnico.getCount();
-            if(itemCount==0){
-                if(productoStored!=null){
+
+            if (itemCount == 0) {
+                if (productoStored != null) {
                     int cantidadVenta = Integer.parseInt(binding.editTextCantidad.getText().toString());
 
                     // Asegurar de que haya suficiente stock disponible
@@ -145,46 +149,70 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
                         int nuevaCantidad = productoStored.getCantidad() - cantidadVenta;
                         productoRef.child("cantidad").setValue(nuevaCantidad);
                         productoStored.setCantidad(nuevaCantidad);
+
+                        // Limpiar campos y crear una nueva venta
                         limpiarCampos();
+                        Ventas nuevaVenta = new Ventas();
                         ProductoVenta aux = new ProductoVenta();
                         aux.producto = productoStored;
                         aux.cantidad = cantidadVenta;
-                        ControlStock.add(aux);
-                        Gson gson = new Gson();
-                        String productosJson = gson.toJson(ControlStock);
-                        VentasReport.setListaProductosVenta(productosJson);
-                        VentasReport.setMontoTotal(cantidadVenta * productoStored.getPrecio());
+                        nuevaVenta.setListaProductosVenta(new ArrayList<>(Collections.singletonList(aux)));
+                        nuevaVenta.setMontoTotal(cantidadVenta * productoStored.getPrecio());
+                        nuevaVenta.setFecha(new Date());
+
+                        // Actualizar la lista de ventas
+                        DatabaseReference ventasRef = FirebaseDatabase.getInstance().getReference("ventas");
+                        String nuevaVentaKey = ventasRef.push().getKey();
+                        ventasRef.child(nuevaVentaKey).setValue(nuevaVenta);
+
+                        // Limpiar producto almacenado
                         productoStored = null;
                         Toast.makeText(getApplicationContext(), "Compra confirmada con éxito", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(getApplicationContext(), "Stock insuficiente", Toast.LENGTH_SHORT).show();
                     }
-                }else{
+                } else {
                     Toast.makeText(getApplicationContext(), "Debe buscar un nuevo producto", Toast.LENGTH_SHORT).show();
                 }
-            }else{
+            } else {
+                // Si hay elementos en la lista, maneja la lógica aquí
                 ArrayAdapter<String> adapter = (ArrayAdapter<String>) binding.listaProductos.getAdapter();
                 adapter.clear();
                 adapter.notifyDataSetChanged();
                 limpiarCampos();
-                Gson gson = new Gson();
-                String productosJson = gson.toJson(ControlStock);
-                VentasReport.setListaProductosVenta(productosJson);
+
+                // Crear una nueva venta con la lista actual de productos vendidos
+                Ventas nuevaVenta = new Ventas();
+                nuevaVenta.setListaProductosVenta(ControlStock);
+                nuevaVenta.setMontoTotal(calcularMontoTotal(ControlStock));
+                nuevaVenta.setFecha(new Date());
+
+                // Actualizar la lista de ventas
+                DatabaseReference ventasRef = FirebaseDatabase.getInstance().getReference("ventas");
+                String nuevaVentaKey = ventasRef.push().getKey();
+                ventasRef.child(nuevaVentaKey).setValue(nuevaVenta);
+
+                // Limpiar la lista de productos vendidos
                 ControlStock.clear();
                 guardarEstadoVentaEnCurso(false);
+
                 Toast.makeText(getApplicationContext(), "Compra confirmada con éxito", Toast.LENGTH_SHORT).show();
             }
-
-            VentasReport.setFecha(new Date());
-            DatabaseReference ventasRef = FirebaseDatabase.getInstance().getReference("ventas");
-            String nuevaVentaKey = ventasRef.push().getKey();
-            ventasRef.child(nuevaVentaKey).setValue(VentasReport);
-
 
         } else {
             Toast.makeText(getApplicationContext(), "Adaptador nulo", Toast.LENGTH_SHORT).show();
         }
+
         toggleProgressBar(false);
+    }
+
+    // Método para calcular el monto total de la venta
+    private int calcularMontoTotal(List<ProductoVenta> productosVenta) {
+        int montoTotal = 0;
+        for (ProductoVenta pv : productosVenta) {
+            montoTotal += pv.cantidad * pv.producto.getPrecio();
+        }
+        return montoTotal;
     }
 
     public void cancelarCompra() {
