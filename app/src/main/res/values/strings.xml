@@ -8,4 +8,6 @@
         <item>Otros</item>
     </string-array>
     <string name="precio_producto">Precio: $%s</string>
+
 </resources>
+
