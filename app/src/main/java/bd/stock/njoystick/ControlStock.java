@@ -2,6 +2,7 @@ package bd.stock.njoystick;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
@@ -22,15 +23,18 @@ public class ControlStock extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.control_stock);
         try {
+            binding = ControlStockBinding.inflate(getLayoutInflater());
+            setContentView(binding.getRoot());
             // Inicializa el ArrayAdapter y asócialo con el ListView
             listaProductosStock = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
             binding.ListaProductoStock.setAdapter(listaProductosStock);
-            listaProductosStock.add("hola");
+            listaProductosStock.add("1");
             listaProductosStock.notifyDataSetChanged();
         }catch (Exception e){
-            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.e("ControlStock", "Error en onCreate", e);
         }
 
     }
