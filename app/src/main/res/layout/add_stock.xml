@@ -41,7 +41,7 @@
 
     <EditText
         android:id="@+id/nombreProducto"
-        android:layout_width="254dp"
+        android:layout_width="238dp"
         android:layout_height="48dp"
         android:layout_marginTop="180dp"
         android:ems="10"
@@ -77,8 +77,8 @@
 
     <EditText
         android:id="@+id/descripcion"
-        android:layout_width="364dp"
-        android:layout_height="75dp"
+        android:layout_width="356dp"
+        android:layout_height="76dp"
         android:layout_marginTop="552dp"
         android:ems="10"
         android:gravity="top|start"
@@ -113,13 +113,13 @@
         android:id="@+id/cantidad"
         android:layout_width="148dp"
         android:layout_height="48dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="18dp"
         android:ems="10"
         android:hint="Cantidad"
         android:inputType="number"
         app:layout_constraintEnd_toStartOf="@+id/imagenProducto"
-        app:layout_constraintHorizontal_bias="0.2"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/marcaProducto" />
 
@@ -135,7 +135,7 @@
         android:inputType="number"
         app:layout_constraintBottom_toTopOf="@+id/btn_tomarFoto"
         app:layout_constraintEnd_toStartOf="@+id/imagenProducto"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cantidad"
         app:layout_constraintVertical_bias="1.0" />
@@ -156,29 +156,27 @@
 
     <Button
         android:id="@+id/btnCancelar"
+        style="@style/MyButtonStyle"
         android:layout_width="174dp"
         android:layout_height="53dp"
-        android:layout_marginTop="9dp"
         android:layout_marginEnd="19dp"
         android:text="CANCELAR"
         app:backgroundTint="@null"
-        style="@style/MyButtonStyle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btn_guardarProducto"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btn_guardarProducto"
+        style="@style/MyButtonStyle"
         android:layout_width="174dp"
         android:layout_height="53dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="4dp"
         android:text="GUARDAR"
         app:backgroundTint="@null"
-        style="@style/MyButtonStyle"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <ProgressBar
         android:id="@+id/progressBar"
