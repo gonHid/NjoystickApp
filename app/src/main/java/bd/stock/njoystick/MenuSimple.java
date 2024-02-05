@@ -60,6 +60,16 @@ public class MenuSimple extends AppCompatActivity{
                 startActivity(intent);
             }
         });
+
+        buttonGoToStock.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Ir a la actividad Venta
+                Intent intent = new Intent(MenuSimple.this, ControlStock.class);
+                startActivity(intent);
+            }
+        });
+
         switchModoNocturno.setChecked(modoNocturno);
         switchModoNocturno.setOnCheckedChangeListener((buttonView, isChecked) -> cambiarTema(isChecked));
     }

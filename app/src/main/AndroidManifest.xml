@@ -59,6 +59,11 @@
             android:windowSoftInputMode="stateAlwaysHidden"
             />
 
+        <activity
+            android:name=".ControlStock"
+            android:exported="true">
+        </activity>
+
     </application>
 
 </manifest>
