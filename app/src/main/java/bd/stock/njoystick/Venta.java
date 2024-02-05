@@ -2,12 +2,15 @@ package bd.stock.njoystick;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -168,7 +171,23 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
                         // Limpiar producto almacenado
                         productoStored = null;
                         Toast.makeText(getApplicationContext(), "Compra confirmada con éxito", Toast.LENGTH_SHORT).show();
+                        if(nuevaCantidad==0){
+                            // Inflar la vista del Toast personalizado
+                            LayoutInflater inflater = getLayoutInflater();
+                            View layout = inflater.inflate(R.layout.fondo_toast_alert, null);
+
+// Configurar el texto del TextView en la vista inflada
+                            TextView text = layout.findViewById(R.id.textViewToastMessage);
+                            text.setText("HA QUEDADO SIN STOCK DE: " + productoStored.getNombre());
+
+// Crear y mostrar el Toast personalizado
+                            Toast toast = new Toast(getApplicationContext());
+                            toast.setDuration(Toast.LENGTH_SHORT);
+                            toast.setView(layout);
+                            toast.show();
+                        }
                     } else {
+
                         Toast.makeText(getApplicationContext(), "Stock insuficiente", Toast.LENGTH_SHORT).show();
                     }
                 } else {
@@ -287,6 +306,21 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
                 guardarEstadoVentaEnCurso(true);
                 limpiarCampos();
                 productoStored = null;
+                if(nuevaCantidad==0){
+                    // Inflar la vista del Toast personalizado
+                    LayoutInflater inflater = getLayoutInflater();
+                    View layout = inflater.inflate(R.layout.fondo_toast_alert, null);
+
+// Configurar el texto del TextView en la vista inflada
+                    TextView text = layout.findViewById(R.id.textViewToastMessage);
+                    text.setText("QUEDARÁ SIN STOCK DE: " + productoStored.getNombre());
+
+// Crear y mostrar el Toast personalizado
+                    Toast toast = new Toast(getApplicationContext());
+                    toast.setDuration(Toast.LENGTH_SHORT);
+                    toast.setView(layout);
+                    toast.show();
+                }
             } else {
                 Toast.makeText(getApplicationContext(), "Stock insuficiente", Toast.LENGTH_SHORT).show();
             }
