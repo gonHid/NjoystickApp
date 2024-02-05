@@ -66,13 +66,13 @@
         android:layout_width="182dp"
         android:layout_height="19dp"
         android:text="Precio: $0.00"
-        android:textSize="16sp"
+        android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/listaProductos"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageViewProducto"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <EditText
         android:id="@+id/editTextCantidad"
@@ -91,10 +91,10 @@
         android:id="@+id/listaProductos"
         android:layout_width="378dp"
         android:layout_height="261dp"
-        android:layout_marginTop="240dp"
+        android:layout_marginTop="252dp"
         android:layout_weight="1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.571"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewNombreProducto" />
 
@@ -142,7 +142,7 @@
         app:layout_constraintVertical_bias="0.156" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/totalVenta"
         android:layout_width="400dp"
         android:layout_height="35dp"
         android:layout_marginTop="20dp"
@@ -157,5 +157,18 @@
         app:layout_constraintTop_toBottomOf="@+id/listaProductos"
         app:layout_constraintVertical_bias="1.0" />
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="358dp"
+        android:layout_height="304dp"
+        android:layout_centerInParent="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.461"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.354"
+        tools:ignore="MissingConstraints"
+        android:visibility="gone"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

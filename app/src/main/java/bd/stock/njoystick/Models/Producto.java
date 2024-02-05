@@ -1,4 +1,4 @@
-package bd.stock.njoystick;
+package bd.stock.njoystick.Models;
 
 public class Producto {
     private String codigo;
@@ -9,14 +9,14 @@ public class Producto {
     private String categoria;
     private String urlImagen;
     private int precio;
-    private boolean isAlternativo;
+    private boolean tomoDoble;
     public Producto() {
         // Constructor vacío requerido por Firebase
     }
 
-    public Producto(String codigo, String nombre, String marca, int precio, boolean isAlternativo, int cantidad, String descripcion, String categoria, String urlImagen) {
+    public Producto(String codigo, String nombre, String marca, int precio, boolean tomoDoble, int cantidad, String descripcion, String categoria, String urlImagen) {
         this.codigo = codigo;
-        this.isAlternativo = isAlternativo;
+        this.tomoDoble = tomoDoble;
         this.nombre = nombre;
         this.marca = marca;
         this.cantidad = cantidad;
@@ -35,11 +35,11 @@ public class Producto {
     }
 
     public boolean isAlternativo() {
-        return isAlternativo;
+        return tomoDoble;
     }
 
-    public void setAlternativo(boolean alternativo) {
-        isAlternativo = alternativo;
+    public void setAlternativo(boolean tomoDoble) {
+        tomoDoble = tomoDoble;
     }
 
     public String getUrlImagen() {

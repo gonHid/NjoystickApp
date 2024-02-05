@@ -41,7 +41,9 @@ dependencies {
 
     implementation("com.squareup.picasso:picasso:2.71828")
 
-    implementation("com.google.code.gson:gson:2.8.8")
+    implementation("com.google.code.gson:gson:2.10")
+
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
     implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
     implementation("com.google.firebase:firebase-analytics")
