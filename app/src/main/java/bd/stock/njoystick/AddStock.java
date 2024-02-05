@@ -151,16 +151,27 @@ public class AddStock extends AppCompatActivity {
     }
 
     private void dispatchTakePictureIntent() {
+        // Crear un Intent para abrir la galería
+        Intent pickPhoto = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+        // Crear un Intent para tomar la foto
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE_SECURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+
+        // Crear un Intent que agrupe ambos Intents anteriores
+        Intent chooserIntent = Intent.createChooser(pickPhoto, "Seleccionar foto o tomar una nueva");
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{takePictureIntent});
+
+        // Verificar si hay aplicaciones disponibles para manejar el Intent
+        if (chooserIntent.resolveActivity(getPackageManager()) != null) {
             try {
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                // Iniciar la actividad usando el Intent agrupado
+                startActivityForResult(chooserIntent, REQUEST_IMAGE_CAPTURE);
             } catch (Exception e) {
                 e.printStackTrace();
                 Toast.makeText(getApplicationContext(), "Error al iniciar la captura de imagen", Toast.LENGTH_SHORT).show();
             }
         } else {
-            Toast.makeText(getApplicationContext(), "No hay una aplicación de cámara disponible", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "No hay una aplicación de cámara o galería disponible", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -218,21 +229,17 @@ public class AddStock extends AppCompatActivity {
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             try {
-                Bundle extras = data.getExtras();
-                if (extras != null) {
-                    Bitmap imageBitmap = (Bitmap) extras.get("data");
-                    if (imageBitmap != null) {
-                        imageView.setImageBitmap(imageBitmap);
-                        // Guardar la URI de la imagen para usarla al guardar el producto
-                        imagenUri = getImageUri(getApplicationContext(), imageBitmap);
-                    } else {
-                        throw new IOException("Bitmap es nulo después de capturar la imagen");
-                    }
+                Uri imageUri = data.getData();
+                if (imageUri != null) {
+                    // Usar la Uri directamente
+                    imageView.setImageURI(imageUri);
+                    // Guardar la URI de la imagen para usarla al guardar el producto
+                    imagenUri = imageUri;
                 } else {
-                    throw new IOException("Extras es nulo después de capturar la imagen");
+                    throw new IOException("Uri de la imagen es nula después de capturar la imagen");
                 }
             } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), "Error: "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
     }
