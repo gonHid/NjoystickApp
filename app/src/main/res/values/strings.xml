@@ -9,5 +9,9 @@
     </string-array>
     <string name="precio_producto">Precio: $%s</string>
 
+    <string-array name="opciones_reporte">
+        <item>Diario</item>
+        <item>Semanal</item>
+        <item>Mensual</item>
+    </string-array>
 </resources>
-

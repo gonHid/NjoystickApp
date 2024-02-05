@@ -31,11 +31,13 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 
+import bd.stock.njoystick.Models.Producto;
+import bd.stock.njoystick.Services.CaptureActivityPortrait;
 import bd.stock.njoystick.databinding.AddStockBinding;
 
 public class AddStock extends AppCompatActivity {
@@ -50,14 +52,16 @@ public class AddStock extends AppCompatActivity {
     private ImageView imageView;
     private Button btnTomarFoto, btnGuardarProducto;
     private EditText codigoProducto, nombreProducto, marcaProducto, cantidad, precio,  descripcion;
-    private CheckBox alternativo;
+    private CheckBox tomoDoble;
     private Uri imagenUri = null;
     private ProgressBar progressBar;
+    private String urlAux = null;
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(), result -> {
         if (result.getContents() == null) {
             Toast.makeText(this, "CANCELADO", Toast.LENGTH_SHORT).show();
         } else {
             binding.codigoProducto.setText(result.getContents());
+            toggleProgressBar(true);
             verificarExistenciaEnFirebase(result.getContents());
         }
     });
@@ -75,7 +79,7 @@ public class AddStock extends AppCompatActivity {
         codigoProducto = findViewById(R.id.codigoProducto);
         nombreProducto = findViewById(R.id.nombreProducto);
         marcaProducto = findViewById(R.id.marcaProducto);
-        alternativo = findViewById(R.id.isAlternativo);
+        tomoDoble = findViewById(R.id.isTomoDoble);
         cantidad = findViewById(R.id.cantidad);
         precio = findViewById(R.id.precio);
         descripcion = findViewById(R.id.descripcion);
@@ -113,8 +117,7 @@ public class AddStock extends AppCompatActivity {
                 if (codigoProducto.getText().toString().isEmpty() ||
                         nombreProducto.getText().toString().isEmpty() ||
                         marcaProducto.getText().toString().isEmpty() ||
-                        cantidad.getText().toString().isEmpty() ||
-                        descripcion.getText().toString().isEmpty()) {
+                        cantidad.getText().toString().isEmpty()) {
                     Toast.makeText(getApplicationContext(), "Completa todos los campos", Toast.LENGTH_SHORT).show();
                 } else {
                     if(imagenUri!=null){
@@ -134,6 +137,8 @@ public class AddStock extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                                     toggleProgressBar(false);
                                 });
+                    }else if(urlAux!=null){
+                        guardarProductoEnFirebase(codigoProducto.getText().toString(),urlAux);
                     }else{
                         Toast.makeText(getApplicationContext(), "Debe añadir una foto", Toast.LENGTH_SHORT).show();
                     }
@@ -146,9 +151,27 @@ public class AddStock extends AppCompatActivity {
     }
 
     private void dispatchTakePictureIntent() {
+        // Crear un Intent para abrir la galería
+        Intent pickPhoto = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+        // Crear un Intent para tomar la foto
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE_SECURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+
+        // Crear un Intent que agrupe ambos Intents anteriores
+        Intent chooserIntent = Intent.createChooser(pickPhoto, "Seleccionar foto o tomar una nueva");
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{takePictureIntent});
+
+        // Verificar si hay aplicaciones disponibles para manejar el Intent
+        if (chooserIntent.resolveActivity(getPackageManager()) != null) {
+            try {
+                // Iniciar la actividad usando el Intent agrupado
+                startActivityForResult(chooserIntent, REQUEST_IMAGE_CAPTURE);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(), "Error al iniciar la captura de imagen", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(getApplicationContext(), "No hay una aplicación de cámara o galería disponible", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -170,10 +193,9 @@ public class AddStock extends AppCompatActivity {
 
     // Método para guardar los datos del producto en Firebase Realtime Database
     private void guardarProductoEnFirebase(String codigoProducto, String urlDescarga) {
-
         // Crear un objeto Producto con todos los datos, incluida la URL de descarga de la imagen
         Producto producto = new Producto(codigoProducto, nombreProducto.getText().toString(), marcaProducto.getText().toString(),
-                Integer.parseInt( precio.getText().toString()),alternativo.isChecked(),
+                Integer.parseInt( precio.getText().toString()),tomoDoble.isChecked(),
                 Integer.parseInt(cantidad.getText().toString()), descripcion.getText().toString(), spinner.getSelectedItem().toString(), urlDescarga);
 
         // Obtener la referencia a la base de datos en Firebase
@@ -190,11 +212,13 @@ public class AddStock extends AppCompatActivity {
                     binding.marcaProducto.setText("");
                     binding.precio.setText("0");
                     binding.imagenProducto.setImageResource(R.drawable.placeholder_image);
+                    urlAux=null;
                     toggleProgressBar(false);
                 })
                 .addOnFailureListener(e -> {
                     // Error al guardar el producto
                     Toast.makeText(getApplicationContext(), "Error al guardar el producto", Toast.LENGTH_SHORT).show();
+                    urlAux=null;
                     toggleProgressBar(false);
                 });
     }
@@ -205,21 +229,17 @@ public class AddStock extends AppCompatActivity {
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             try {
-                Bundle extras = data.getExtras();
-                if (extras != null) {
-                    Bitmap imageBitmap = (Bitmap) extras.get("data");
-                    if (imageBitmap != null) {
-                        imageView.setImageBitmap(imageBitmap);
-                        // Guardar la URI de la imagen para usarla al guardar el producto
-                        imagenUri = getImageUri(getApplicationContext(), imageBitmap);
-                    } else {
-                        throw new IOException("Bitmap es nulo después de capturar la imagen");
-                    }
+                Uri imageUri = data.getData();
+                if (imageUri != null) {
+                    // Usar la Uri directamente
+                    imageView.setImageURI(imageUri);
+                    // Guardar la URI de la imagen para usarla al guardar el producto
+                    imagenUri = imageUri;
                 } else {
-                    throw new IOException("Extras es nulo después de capturar la imagen");
+                    throw new IOException("Uri de la imagen es nula después de capturar la imagen");
                 }
-            } catch (IOException e) {
-                Toast.makeText(getApplicationContext(), "Error: "+e.getMessage(), Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -232,17 +252,41 @@ public class AddStock extends AppCompatActivity {
                 if (dataSnapshot.exists()) {
                     // El producto existe en la base de datos
                     Toast.makeText(getApplicationContext(), "Ya existe, se sobrescribirá el producto", Toast.LENGTH_SHORT).show();
+                    Producto productoExistente = dataSnapshot.getValue(Producto.class);
+                    binding.nombreProducto.setText(productoExistente.getNombre());
+                    binding.marcaProducto.setText(productoExistente.getMarca());
+                    binding.cantidad.setText(String.valueOf(productoExistente.getCantidad()));
+                    binding.precio.setText(String.valueOf(productoExistente.getPrecio()));
+                    binding.descripcion.setText(productoExistente.getDescripcion());
+                    String[] opciones = getResources().getStringArray(R.array.opciones_spinner);
+                    int posicionSeleccionada = -1;
+                    for (int i = 0; i < opciones.length; i++) {
+                        if (opciones[i].equals(productoExistente.getCategoria())) {
+                            posicionSeleccionada = i;
+                            break;  // Detener la búsqueda una vez encontrado
+                        }
+                    }
+                    if (posicionSeleccionada != -1) {
+                        // Seleccionar el elemento en el Spinner
+                        spinner.setSelection(posicionSeleccionada);
+                    } else {
+                        // Manejar el caso en el que el elemento no se encuentre en la lista
+                        Toast.makeText(getApplicationContext(), "La categoria no coincide", Toast.LENGTH_SHORT).show();
+                    }
 
-                    // Aquí puedes realizar otras acciones si el producto existe
+                    Picasso.get().load(productoExistente.getUrlImagen()).into(binding.imagenProducto);
+                    urlAux = productoExistente.getUrlImagen();
                 } else {
                     // El producto no existe en la base de datos
                     Toast.makeText(getApplicationContext(), "Ingresará un nuevo producto", Toast.LENGTH_SHORT).show();
                 }
+                toggleProgressBar(false);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Toast.makeText(getApplicationContext(), "Error al leer datos de Firebase", Toast.LENGTH_SHORT).show();
+                toggleProgressBar(false);
             }
         });
     }
