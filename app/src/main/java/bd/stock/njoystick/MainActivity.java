@@ -40,13 +40,13 @@ public class MainActivity extends AppCompatActivity {
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // String username = editTextUsername.getText().toString();
-                //String password = editTextPassword.getText().toString();
+               String username = editTextUsername.getText().toString();
+               String password = editTextPassword.getText().toString();
 
 
                 // Utilizar Firebase Authentication para iniciar sesión con email y contraseña
-                String username = "tenaciousdevchile@gmail.com";
-                String password = "NjoyDev";
+                //String username = "tenaciousdevchile@gmail.com";
+                //String password = "NjoyDev";
                 firebaseAuth.signInWithEmailAndPassword(username, password)
                         .addOnCompleteListener(MainActivity.this, new OnCompleteListener() {
                             @Override
