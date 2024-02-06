@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.WindowManager;
@@ -139,28 +140,35 @@ public class AddStock extends AppCompatActivity {
         btnGuardarProducto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (imagenUri != null) {
+                if (TextUtils.isEmpty(binding.codigoProducto.getText().toString()) || TextUtils.isEmpty(binding.nombreProducto.getText().toString()) ||
+                        TextUtils.isEmpty(binding.marcaProducto.getText().toString()) || TextUtils.isEmpty(binding.cantidad.getText().toString()) ||
+                        TextUtils.isEmpty(binding.precio.getText().toString())) {
+                    Toast.makeText(getApplicationContext(), "Complete la informacion importante", Toast.LENGTH_SHORT).show();
+                    return;  // Salir del método si algún campo está vacío
+                }else{
                     toggleProgressBar(true);
+                    String codigoProductoStr = binding.codigoProducto.getText().toString();
+                    if(urlAux!=null){
+                        guardarProductoEnFirebase(codigoProductoStr, urlAux);
+                    } else if (imagenUri != null) {
+                        // Obtener la referencia del almacenamiento en Firebase con la carpeta "imagenes_productos" y el nombre del archivo como el código del producto
+                        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("imagenes_productos/" + codigoProductoStr);
 
-                    // Obtener el código del producto
-                    String codigoProductoStr = codigoProducto.getText().toString();
-
-                    // Obtener la referencia del almacenamiento en Firebase con la carpeta "imagenes_productos" y el nombre del archivo como el código del producto
-                    StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("imagenes_productos/" + codigoProductoStr);
-
-                    // Subir la imagen al Storage
-                    storageRef.putFile(imagenUri)
-                            .addOnSuccessListener(taskSnapshot -> {
-                                // La imagen se ha subido exitosamente, obtén la URL de descarga
-                                obtenerURLDescarga(storageRef, codigoProductoStr);
-                            })
-                            .addOnFailureListener(e -> {
-                                // Handle unsuccessful uploads
-                                Toast.makeText(getApplicationContext(), "Error al subir la imagen", Toast.LENGTH_SHORT).show();
-                                toggleProgressBar(false);
-                            });
-                } else {
-                    Toast.makeText(getApplicationContext(), "Debe añadir una foto", Toast.LENGTH_SHORT).show();
+                        // Subir la imagen al Storage
+                        storageRef.putFile(imagenUri)
+                                .addOnSuccessListener(taskSnapshot -> {
+                                    // La imagen se ha subido exitosamente, obtén la URL de descarga
+                                    obtenerURLDescarga(storageRef, codigoProductoStr);
+                                })
+                                .addOnFailureListener(e -> {
+                                    // Handle unsuccessful uploads
+                                    Toast.makeText(getApplicationContext(), "Error al subir la imagen", Toast.LENGTH_SHORT).show();
+                                    toggleProgressBar(false);
+                                });
+                    }else {
+                        Toast.makeText(getApplicationContext(), "Debe añadir una foto", Toast.LENGTH_SHORT).show();
+                        toggleProgressBar(false);
+                    }
                 }
             }
         });
