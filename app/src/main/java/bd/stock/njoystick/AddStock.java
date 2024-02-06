@@ -4,8 +4,10 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.InputType;
@@ -40,7 +42,11 @@ import com.journeyapps.barcodescanner.ScanOptions;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +54,8 @@ import bd.stock.njoystick.Models.ProductAdapter;
 import bd.stock.njoystick.Models.Producto;
 import bd.stock.njoystick.Services.CaptureActivityPortrait;
 import bd.stock.njoystick.databinding.AddStockBinding;
+
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 public class AddStock extends AppCompatActivity {
@@ -70,6 +78,7 @@ public class AddStock extends AppCompatActivity {
     private ProductAdapter adapterSearch;
     private EditText editTextBuscar;
     private RecyclerView recyclerView;
+    private String currentPhotoPath;
 
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(), result -> {
         if (result.getContents() == null) {
@@ -123,42 +132,35 @@ public class AddStock extends AppCompatActivity {
         btnTomarFoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dispatchTakePictureIntent();
+                mostrarOpcionesDialog();
             }
         });
 
         btnGuardarProducto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (codigoProducto.getText().toString().isEmpty() ||
-                        nombreProducto.getText().toString().isEmpty() ||
-                        marcaProducto.getText().toString().isEmpty() ||
-                        cantidad.getText().toString().isEmpty()) {
-                    Toast.makeText(getApplicationContext(), "Completa todos los campos", Toast.LENGTH_SHORT).show();
+                if (imagenUri != null) {
+                    toggleProgressBar(true);
+
+                    // Obtener el código del producto
+                    String codigoProductoStr = codigoProducto.getText().toString();
+
+                    // Obtener la referencia del almacenamiento en Firebase con la carpeta "imagenes_productos" y el nombre del archivo como el código del producto
+                    StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("imagenes_productos/" + codigoProductoStr);
+
+                    // Subir la imagen al Storage
+                    storageRef.putFile(imagenUri)
+                            .addOnSuccessListener(taskSnapshot -> {
+                                // La imagen se ha subido exitosamente, obtén la URL de descarga
+                                obtenerURLDescarga(storageRef, codigoProductoStr);
+                            })
+                            .addOnFailureListener(e -> {
+                                // Handle unsuccessful uploads
+                                Toast.makeText(getApplicationContext(), "Error al subir la imagen", Toast.LENGTH_SHORT).show();
+                                toggleProgressBar(false);
+                            });
                 } else {
-                    if(imagenUri!=null){
-                        toggleProgressBar(true);
-                        // Obtener la referencia del almacenamiento en Firebase
-                        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("imagenes_productos/" + codigoProducto.getText().toString());
-
-                        // Subir la imagen al Storage
-                        storageRef.putFile(imagenUri)
-                                .addOnSuccessListener(taskSnapshot -> {
-                                    // La imagen se ha subido exitosamente, obtén la URL de descarga
-                                    obtenerURLDescarga(storageRef, codigoProducto.getText().toString());
-                                })
-                                .addOnFailureListener(e -> {
-                                    // Handle unsuccessful uploads
-                                    Toast.makeText(getApplicationContext(), "Error al subir la imagen", Toast.LENGTH_SHORT).show();
-                                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                                    toggleProgressBar(false);
-                                });
-                    }else if(urlAux!=null){
-                        guardarProductoEnFirebase(codigoProducto.getText().toString(),urlAux);
-                    }else{
-                        Toast.makeText(getApplicationContext(), "Debe añadir una foto", Toast.LENGTH_SHORT).show();
-                    }
-
+                    Toast.makeText(getApplicationContext(), "Debe añadir una foto", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -172,31 +174,65 @@ public class AddStock extends AppCompatActivity {
         });
     }
 
-    private void dispatchTakePictureIntent() {
-        // Crear un Intent para abrir la galería
-        Intent pickPhoto = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
-        // Crear un Intent para tomar la foto
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE_SECURE);
+    private void mostrarOpcionesDialog() {
+        CharSequence[] opciones = {"Tomar Foto", "Seleccionar desde Galería"};
 
-        // Crear un Intent que agrupe ambos Intents anteriores
-        Intent chooserIntent = Intent.createChooser(pickPhoto, "Seleccionar foto o tomar una nueva");
-        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{takePictureIntent});
-
-        // Verificar si hay aplicaciones disponibles para manejar el Intent
-        if (chooserIntent.resolveActivity(getPackageManager()) != null) {
-            try {
-                // Iniciar la actividad usando el Intent agrupado
-                startActivityForResult(chooserIntent, REQUEST_IMAGE_CAPTURE);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Toast.makeText(getApplicationContext(), "Error al iniciar la captura de imagen", Toast.LENGTH_SHORT).show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Elige una opción");
+        builder.setItems(opciones, (dialog, item) -> {
+            if (item == 0) {
+                // Tomar foto con la cámara
+                dispatchTakePictureIntent();
+            } else if (item == 1) {
+                // Seleccionar imagen desde la galería
+                seleccionarImagenDesdeGaleria();
             }
-        } else {
-            Toast.makeText(getApplicationContext(), "No hay una aplicación de cámara o galería disponible", Toast.LENGTH_SHORT).show();
+        });
+        builder.show();
+    }
+
+    private void seleccionarImagenDesdeGaleria() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+        startActivityForResult(intent, REQUEST_IMAGE_PICK);
+    }
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                ex.printStackTrace();
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "bd.stock.njoystick.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
         }
     }
 
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String imageFileName = "JPEG_" + System.currentTimeMillis() + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
     // Nuevo método para obtener la URL de descarga de la imagen
     private void obtenerURLDescarga(StorageReference storageRef, String codigoProducto) {
         storageRef.getDownloadUrl()
@@ -249,22 +285,23 @@ public class AddStock extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            try {
-                Uri imageUri = data.getData();
-                if (imageUri != null) {
-                    // Usar la Uri directamente
-                    imageView.setImageURI(imageUri);
-                    // Guardar la URI de la imagen para usarla al guardar el producto
-                    imagenUri = imageUri;
-                } else {
-                    throw new IOException("Uri de la imagen es nula después de capturar la imagen");
-                }
-            } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        if (requestCode == REQUEST_IMAGE_PICK && resultCode == RESULT_OK && data != null) {
+            // Imagen seleccionada desde la galería
+            Uri selectedImageUri = data.getData();
+            if (selectedImageUri != null) {
+                imageView.setImageURI(selectedImageUri);
+                imagenUri = selectedImageUri;
+            }
+        } else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            // Imagen capturada con la cámara
+            if (currentPhotoPath != null) {
+                Uri imageUri = Uri.fromFile(new File(currentPhotoPath));
+                imageView.setImageURI(imageUri);
+                imagenUri = imageUri;
             }
         }
     }
+
 
     private void verificarExistenciaEnFirebase(String codigoProducto) {
         DatabaseReference productosRef = FirebaseDatabase.getInstance().getReference("productos").child(codigoProducto);
