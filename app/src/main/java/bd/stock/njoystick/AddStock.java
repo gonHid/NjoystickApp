@@ -146,12 +146,11 @@ public class AddStock extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Complete la informacion importante", Toast.LENGTH_SHORT).show();
                     return;  // Salir del método si algún campo está vacío
                 }else{
-                if (imagenUri != null) {
                     toggleProgressBar(true);
-
-                        // Obtener el código del producto
-                        String codigoProductoStr = codigoProducto.getText().toString();
-
+                    String codigoProductoStr = binding.codigoProducto.getText().toString();
+                    if(urlAux!=null){
+                        guardarProductoEnFirebase(codigoProductoStr, urlAux);
+                    } else if (imagenUri != null) {
                         // Obtener la referencia del almacenamiento en Firebase con la carpeta "imagenes_productos" y el nombre del archivo como el código del producto
                         StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("imagenes_productos/" + codigoProductoStr);
 
@@ -166,10 +165,10 @@ public class AddStock extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(), "Error al subir la imagen", Toast.LENGTH_SHORT).show();
                                     toggleProgressBar(false);
                                 });
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "Debe añadir una foto", Toast.LENGTH_SHORT).show();
-                }
+                    }else {
+                        Toast.makeText(getApplicationContext(), "Debe añadir una foto", Toast.LENGTH_SHORT).show();
+                        toggleProgressBar(false);
+                    }
                 }
             }
         });
