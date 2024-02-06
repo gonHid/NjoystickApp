@@ -383,7 +383,9 @@ public class AddStock extends AppCompatActivity {
                 if (selectedProduct != null) {
                     String selectedProductCode = selectedProduct.getCodigo();
                     // Puedes mostrar el código como desees
+                    binding.codigoProducto.setText(selectedProductCode);
                     verificarExistenciaEnFirebase(selectedProductCode);
+
                     //Toast.makeText(AddStock.this, "Código del producto: " + selectedProductCode, Toast.LENGTH_SHORT).show();
                     alertDialog.dismiss();  // Cerrar el diálogo después de seleccionar
                 }
