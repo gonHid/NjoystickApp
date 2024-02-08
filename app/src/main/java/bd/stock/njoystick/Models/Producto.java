@@ -34,12 +34,12 @@ public class Producto {
         this.precio = precio;
     }
 
-    public boolean isAlternativo() {
+    public boolean getTomoDoble() {
         return tomoDoble;
     }
 
-    public void setAlternativo(boolean tomoDoble) {
-        tomoDoble = tomoDoble;
+    public void setTomoDoble(boolean tomoDoble) {
+        this.tomoDoble = tomoDoble;
     }
 
     public String getUrlImagen() {

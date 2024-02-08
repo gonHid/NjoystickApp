@@ -5,6 +5,7 @@
         <item>Mangas</item>
         <item>Figuras</item>
         <item>Videojuegos</item>
+        <item>Papeleria</item>
         <item>Otros</item>
     </string-array>
     <string name="precio_producto">Precio: $%s</string>

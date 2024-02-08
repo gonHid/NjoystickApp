@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "9313380979",
-    "project_id": "njoystickbd",
-    "storage_bucket": "njoystickbd.appspot.com"
+    "project_number": "40490794778",
+    "project_id": "njoystick-5ac79",
+    "storage_bucket": "njoystick-5ac79.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:9313380979:android:d2d13137544e62792b1806",
+        "mobilesdk_app_id": "1:40490794778:android:4250694cffcbbdf6c2b6a3",
         "android_client_info": {
           "package_name": "bd.stock.njoystick"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDXAdH4MDw3_TuaF7RBqeoiaBpKHUXpJIY"
+          "current_key": "AIzaSyAN78aXFLA-Qmcvzh6zpq5w2Z_Q10P7J-U"
         }
       ],
       "services": {

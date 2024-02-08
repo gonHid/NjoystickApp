@@ -4,13 +4,11 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.WindowManager;
@@ -19,9 +17,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
-import androidx.appcompat.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -43,10 +39,7 @@ import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -253,7 +246,7 @@ public class AddStock extends AppCompatActivity {
     private void guardarProductoEnFirebase(String codigoProducto, String urlDescarga) {
         // Crear un objeto Producto con todos los datos, incluida la URL de descarga de la imagen
         Producto producto = new Producto(codigoProducto, nombreProducto.getText().toString(), marcaProducto.getText().toString(),
-                Integer.parseInt( precio.getText().toString()),tomoDoble.isChecked(),
+                Integer.parseInt( precio.getText().toString()),binding.isTomoDoble.isChecked(),
                 Integer.parseInt(cantidad.getText().toString()), descripcion.getText().toString(), spinner.getSelectedItem().toString(), urlDescarga);
 
         // Obtener la referencia a la base de datos en Firebase
@@ -265,10 +258,10 @@ public class AddStock extends AppCompatActivity {
                     // Éxito al guardar el producto
                     Toast.makeText(getApplicationContext(), "Producto guardado exitosamente", Toast.LENGTH_SHORT).show();
                     binding.codigoProducto.setText("");
-                    binding.cantidad.setText("1");
+                    binding.cantidad.setText("");
                     binding.descripcion.setText("");
                     binding.marcaProducto.setText("");
-                    binding.precio.setText("0");
+                    binding.precio.setText("");
                     binding.imagenProducto.setImageResource(R.drawable.placeholder_image);
                     urlAux=null;
                     toggleProgressBar(false);
