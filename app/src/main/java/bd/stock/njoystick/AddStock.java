@@ -2,6 +2,7 @@ package bd.stock.njoystick;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -167,6 +168,63 @@ public class AddStock extends AppCompatActivity {
                 mostrarDialogoBusqueda();
             }
         });
+
+        binding.btnEliminarProducto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(urlAux!=null){
+                    mostrarConfirmacionDialog();
+                }else{
+                    Toast.makeText(getApplicationContext(), "Debe seleccionar un producto existente en sistema", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void mostrarConfirmacionDialog() {
+        // Supongamos que "codigoProducto" y "nombreProducto" son las variables que contienen la información del producto
+        final String codigoProducto = binding.codigoProducto.getText().toString();
+        final String nombreProducto = binding.nombreProducto.getText().toString();
+
+        // Crea un cuadro de diálogo de confirmación
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Confirmar Eliminación");
+        builder.setMessage("¿Seguro que desea eliminar el producto '" + nombreProducto + "' de código '" + codigoProducto + "'?");
+
+        // Agrega los botones "Sí" y "Cancelar" al cuadro de diálogo
+        builder.setPositiveButton("ELIMINAR", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // Si el usuario hace clic en "Sí", elimina el producto
+                eliminarProducto(codigoProducto);
+            }
+        });
+
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // Si el usuario hace clic en "Cancelar", cierra el cuadro de diálogo sin hacer nada
+                dialogInterface.dismiss();
+            }
+        });
+
+        // Muestra el cuadro de diálogo
+        builder.show();
+    }
+
+    private void eliminarProducto(String codigoProducto) {
+        toggleProgressBar(true);
+        DatabaseReference productoEliminarRef = FirebaseDatabase.getInstance().getReference("productos").child(codigoProducto);
+        productoEliminarRef.removeValue();
+        binding.codigoProducto.setText("");
+        binding.cantidad.setText("");
+        binding.descripcion.setText("");
+        binding.marcaProducto.setText("");
+        binding.precio.setText("");
+        binding.imagenProducto.setImageResource(R.drawable.placeholder_image);
+        urlAux=null;
+        Toast.makeText(getApplicationContext(), "PRODUCTO ELIMINADO", Toast.LENGTH_SHORT).show();
+        toggleProgressBar(false);
     }
 
 

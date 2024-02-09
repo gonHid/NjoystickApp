@@ -11,15 +11,16 @@
 
     <EditText
         android:id="@+id/codigoProducto"
-        android:layout_width="345dp"
+        android:layout_width="255dp"
         android:layout_height="48dp"
         android:layout_marginTop="12dp"
         android:editable="true"
         android:gravity="center_vertical"
-        android:hint="ESCANEAR O INGRESAR CÓDIGO AQUÍ"
+        android:hint="INGRESAR CÓDIGO"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/btnLeerCodigo"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
@@ -29,38 +30,35 @@
         style="@style/MyButtonStyle"
         android:layout_width="161dp"
         android:layout_height="89dp"
+        android:layout_marginTop="60dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="31dp"
         android:text="ESCANEAR"
         app:backgroundTint="@null"
-        app:layout_constraintBottom_toTopOf="@+id/nombreProducto"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btnBuscarPorNombre"
-        app:layout_constraintHorizontal_bias="0.061"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/btnBuscarPorNombre"
         style="@style/MyButtonStyle"
         android:layout_width="161dp"
         android:layout_height="89dp"
-        android:layout_marginBottom="31dp"
+        android:layout_marginTop="60dp"
         android:text="BUSCAR POR NOMBRE"
         app:backgroundTint="@null"
-        app:layout_constraintBottom_toTopOf="@+id/nombreProducto"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.904"
+        app:layout_constraintHorizontal_bias="0.828"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/nombreProducto"
         android:layout_width="238dp"
         android:layout_height="48dp"
-        android:layout_marginTop="180dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="160dp"
         android:ems="10"
         android:hint="Nombre Producto"
         android:inputType="text"
@@ -69,23 +67,24 @@
 
     <Button
         android:id="@+id/btn_tomarFoto"
+        style="@style/MyButtonStyle"
         android:layout_width="139dp"
         android:layout_height="93dp"
         android:layout_marginTop="72dp"
         android:layout_marginEnd="7dp"
-        app:backgroundTint="@null"
-        style="@style/MyButtonStyle"
         android:text="Tomar Foto o Elegir de Galería"
+        app:backgroundTint="@null"
         app:layout_constraintEnd_toStartOf="@+id/imagenProducto"
-        app:layout_constraintHorizontal_bias="0.04"
+        app:layout_constraintHorizontal_bias="0.428"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cantidad" />
 
     <ImageView
         android:id="@+id/imagenProducto"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="34dp"
+        android:layout_width="219dp"
+        android:layout_height="212dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="4dp"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
         android:src="@drawable/placeholder_image"
@@ -96,13 +95,14 @@
         android:id="@+id/descripcion"
         android:layout_width="356dp"
         android:layout_height="76dp"
-        android:layout_marginTop="552dp"
+        android:layout_marginTop="540dp"
         android:ems="10"
         android:gravity="top|start"
         android:hint="Descripcion"
         android:inputType="text"
         android:lines="5"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.466"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -110,10 +110,10 @@
         android:id="@+id/isTomoDoble"
         android:layout_width="114dp"
         android:layout_height="48dp"
-        android:layout_marginTop="180dp"
+        android:layout_marginTop="160dp"
         android:text="Tomo doble"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.733"
         app:layout_constraintStart_toEndOf="@+id/nombreProducto"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -128,34 +128,30 @@
 
     <EditText
         android:id="@+id/cantidad"
-        android:layout_width="148dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="18dp"
+        android:layout_width="136dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="24dp"
         android:ems="10"
         android:hint="Cantidad"
         android:inputType="number"
-        app:layout_constraintEnd_toStartOf="@+id/imagenProducto"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/marcaProducto" />
 
     <EditText
         android:id="@+id/precio"
-        android:layout_width="148dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="9dp"
-        android:layout_marginEnd="22dp"
-        android:layout_marginBottom="15dp"
+        android:layout_width="139dp"
+        android:layout_height="47dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="4dp"
         android:ems="10"
         android:hint="Precio"
         android:inputType="number"
         app:layout_constraintBottom_toTopOf="@+id/btn_tomarFoto"
-        app:layout_constraintEnd_toStartOf="@+id/imagenProducto"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cantidad"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <EditText
         android:id="@+id/marcaProducto"
@@ -208,6 +204,52 @@
         app:layout_constraintVertical_bias="0.354"
         tools:ignore="MissingConstraints"
         android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:text="Cantidad stock"
+        app:layout_constraintBottom_toTopOf="@+id/cantidad"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/marcaProducto"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="1dp"
+        android:text="Precio"
+        app:layout_constraintBottom_toTopOf="@+id/precio"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cantidad"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="5dp"
+        android:text="Marca"
+        app:layout_constraintBottom_toTopOf="@+id/marcaProducto"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/nombreProducto"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/btnEliminarProducto"
+        android:layout_width="116dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="12dp"
+        android:text="ELIMINAR"
+        android:backgroundTint="#CC0000"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
