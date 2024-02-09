@@ -152,7 +152,9 @@ public class AddStock extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), "Error al subir la imagen", Toast.LENGTH_SHORT).show();
                                 toggleProgressBar(false);
                             });
-                } else {
+                } else if(urlAux!=null){
+                    guardarProductoEnFirebase(codigoProducto.getText().toString(),urlAux);
+                }else{
                     Toast.makeText(getApplicationContext(), "Debe añadir una foto", Toast.LENGTH_SHORT).show();
                 }
             }
