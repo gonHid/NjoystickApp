@@ -106,25 +106,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <CheckBox
-        android:id="@+id/isTomoDoble"
-        android:layout_width="114dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="160dp"
-        android:text="Tomo doble"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.733"
-        app:layout_constraintStart_toEndOf="@+id/nombreProducto"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <Spinner
         android:id="@+id/spinner"
         android:layout_width="160dp"
         android:layout_height="48dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="84dp"
+        android:layout_marginEnd="4dp"
         android:entries="@array/opciones_spinner"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/isTomoDoble" />
+        app:layout_constraintTop_toBottomOf="@+id/btnBuscarPorNombre" />
+
+    <Spinner
+        android:id="@+id/selecTipoTomo"
+        android:layout_width="120dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="11dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="20dp"
+        android:entries="@array/opciones_tipoTomo"
+        app:layout_constraintBottom_toTopOf="@+id/spinner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnBuscarPorNombre"
+        app:layout_constraintVertical_bias="0.0" />
 
     <EditText
         android:id="@+id/cantidad"
@@ -163,7 +166,7 @@
         android:hint="Marca"
         android:inputType="text"
         app:layout_constraintEnd_toStartOf="@+id/spinner"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/nombreProducto" />
 

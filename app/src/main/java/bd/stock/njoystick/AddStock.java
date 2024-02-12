@@ -64,7 +64,7 @@ public class AddStock extends AppCompatActivity {
     private ImageView imageView;
     private Button btnTomarFoto, btnGuardarProducto;
     private EditText codigoProducto, nombreProducto, marcaProducto, cantidad, precio,  descripcion;
-    private CheckBox tomoDoble;
+    private Spinner tomoDoble;
     private Uri imagenUri = null;
     private ProgressBar progressBar;
     private String urlAux = null;
@@ -98,7 +98,7 @@ public class AddStock extends AppCompatActivity {
         codigoProducto = findViewById(R.id.codigoProducto);
         nombreProducto = findViewById(R.id.nombreProducto);
         marcaProducto = findViewById(R.id.marcaProducto);
-        tomoDoble = findViewById(R.id.isTomoDoble);
+        tomoDoble = findViewById(R.id.selecTipoTomo);
         cantidad = findViewById(R.id.cantidad);
         precio = findViewById(R.id.precio);
         descripcion = findViewById(R.id.descripcion);
@@ -306,8 +306,8 @@ public class AddStock extends AppCompatActivity {
     private void guardarProductoEnFirebase(String codigoProducto, String urlDescarga) {
         // Crear un objeto Producto con todos los datos, incluida la URL de descarga de la imagen
         Producto producto = new Producto(codigoProducto, nombreProducto.getText().toString(), marcaProducto.getText().toString(),
-                Integer.parseInt( precio.getText().toString()),binding.isTomoDoble.isChecked(),
-                Integer.parseInt(cantidad.getText().toString()), descripcion.getText().toString(), spinner.getSelectedItem().toString(), urlDescarga);
+                Integer.parseInt(cantidad.getText().toString()), descripcion.getText().toString(),
+                spinner.getSelectedItem().toString(),urlDescarga,Integer.parseInt( precio.getText().toString()) , binding.selecTipoTomo.getSelectedItem().toString());
 
         // Obtener la referencia a la base de datos en Firebase
         DatabaseReference productosRef = FirebaseDatabase.getInstance().getReference("productos");
@@ -323,6 +323,39 @@ public class AddStock extends AppCompatActivity {
                     binding.marcaProducto.setText("");
                     binding.precio.setText("");
                     binding.imagenProducto.setImageResource(R.drawable.placeholder_image);
+                    //MODIFICAR PRECIO DE LOS MANGAS CUANDO SE CUMPLAN LAS CONDICIONES ESTABLECIDAS POR EL CLIENTE.
+                    if(producto.getCategoria().equals("Mangas") && ( producto.getMarca().equalsIgnoreCase("Ivrea") || producto.getMarca().equalsIgnoreCase("Panini"))
+                            && (producto.getTipoTomo().equalsIgnoreCase("Tomo Simple") || producto.getTipoTomo().equalsIgnoreCase("Tomo Doble"))){
+                        Toast.makeText(getApplicationContext(), "Modificando precios de mangas coincidentes", Toast.LENGTH_SHORT).show();
+
+                        DatabaseReference preciosRef = FirebaseDatabase.getInstance().getReference("precios");
+
+                        // Consultar productos con la misma marca y tipo de tomo
+                        preciosRef.orderByChild("marca").equalTo(producto.getMarca())
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                            Producto productoRelacionado = snapshot.getValue(Producto.class);
+
+                                            if (productoRelacionado != null &&
+                                                    productoRelacionado.getTipoTomo().equalsIgnoreCase(producto.getTipoTomo())) {
+                                                // Modificar el precio del producto relacionado
+                                                int nuevoPrecio = Integer.parseInt(precio.getText().toString());
+                                                productoRelacionado.setPrecio(nuevoPrecio);
+
+                                                // Actualizar el precio en Firebase
+                                                preciosRef.child(snapshot.getKey()).setValue(productoRelacionado);
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                        // Manejar el error en la consulta
+                                    }
+                                });
+                    }
                     urlAux=null;
                     toggleProgressBar(false);
                 })
@@ -384,6 +417,21 @@ public class AddStock extends AppCompatActivity {
                     } else {
                         // Manejar el caso en el que el elemento no se encuentre en la lista
                         Toast.makeText(getApplicationContext(), "La categoria no coincide", Toast.LENGTH_SHORT).show();
+                    }
+                    opciones = getResources().getStringArray(R.array.opciones_tipoTomo);
+                    posicionSeleccionada = -1;
+                    for (int i = 0; i < opciones.length; i++) {
+                        if (opciones[i].equals(productoExistente.getTipoTomo())) {
+                            posicionSeleccionada = i;
+                            break;  // Detener la búsqueda una vez encontrado
+                        }
+                    }
+                    if (posicionSeleccionada != -1) {
+                        // Seleccionar el elemento en el Spinner
+                        tomoDoble.setSelection(posicionSeleccionada);
+                    } else {
+                        // Manejar el caso en el que el elemento no se encuentre en la lista
+                        Toast.makeText(getApplicationContext(), "El tipo de tomo no coincide", Toast.LENGTH_SHORT).show();
                     }
 
                     Picasso.get().load(productoExistente.getUrlImagen()).into(binding.imagenProducto);
