@@ -173,7 +173,7 @@ public class ControlStock extends AppCompatActivity {
 
         // Agregamos los productos ordenados a la listaProductosStock
         for (Producto producto : productosFiltrados) {
-            listaProductosStock.add(producto.getNombre() + " Stock: " + producto.getCantidad());
+            listaProductosStock.add(producto.getNombre() + "  || Precio: $"+producto.getPrecio()+"  || Stock: " + producto.getCantidad());
         }
 
         // Notificamos al ArrayAdapter sobre los cambios en los datos
