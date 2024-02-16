@@ -305,7 +305,6 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
                 listaProductosAdapter.notifyDataSetChanged();
                 guardarEstadoVentaEnCurso(true);
                 limpiarCampos();
-                productoStored = null;
                 if(nuevaCantidad==0){
                     // Inflar la vista del Toast personalizado
                     LayoutInflater inflater = getLayoutInflater();
@@ -321,6 +320,7 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
                     toast.setView(layout);
                     toast.show();
                 }
+                productoStored = null;
             } else {
                 Toast.makeText(getApplicationContext(), "Stock insuficiente", Toast.LENGTH_SHORT).show();
             }
