@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">Njoystick</string>
 
+    <string-array name="opciones_tipoTomo">
+        <item>Tomo Simple</item>
+        <item>Tomo Doble</item>
+        <item>Otro</item>
+    </string-array>
     <string-array name="opciones_spinner">
         <item>Mangas</item>
         <item>Figuras</item>

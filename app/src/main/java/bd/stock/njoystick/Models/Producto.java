@@ -9,14 +9,13 @@ public class Producto {
     private String categoria;
     private String urlImagen;
     private int precio;
-    private boolean tomoDoble;
+    private String tipoTomo;
     public Producto() {
         // Constructor vacío requerido por Firebase
     }
 
-    public Producto(String codigo, String nombre, String marca, int precio, boolean tomoDoble, int cantidad, String descripcion, String categoria, String urlImagen) {
+    public Producto(String codigo, String nombre, String marca, int cantidad, String descripcion, String categoria, String urlImagen, int precio, String tipoTomo) {
         this.codigo = codigo;
-        this.tomoDoble = tomoDoble;
         this.nombre = nombre;
         this.marca = marca;
         this.cantidad = cantidad;
@@ -24,6 +23,7 @@ public class Producto {
         this.categoria = categoria;
         this.urlImagen = urlImagen;
         this.precio = precio;
+        this.tipoTomo = tipoTomo;
     }
 
     public int getPrecio() {
@@ -34,12 +34,12 @@ public class Producto {
         this.precio = precio;
     }
 
-    public boolean isAlternativo() {
-        return tomoDoble;
+    public String getTipoTomo() {
+        return tipoTomo;
     }
 
-    public void setAlternativo(boolean tomoDoble) {
-        tomoDoble = tomoDoble;
+    public void setTipoTomo(String tipoTomo) {
+        this.tipoTomo = tipoTomo;
     }
 
     public String getUrlImagen() {

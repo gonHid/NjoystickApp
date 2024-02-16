@@ -2,16 +2,14 @@ package bd.stock.njoystick;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
-import android.text.InputType;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.WindowManager;
@@ -20,9 +18,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
-import androidx.appcompat.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -44,10 +40,7 @@ import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,7 +64,7 @@ public class AddStock extends AppCompatActivity {
     private ImageView imageView;
     private Button btnTomarFoto, btnGuardarProducto;
     private EditText codigoProducto, nombreProducto, marcaProducto, cantidad, precio,  descripcion;
-    private CheckBox tomoDoble;
+    private Spinner tomoDoble;
     private Uri imagenUri = null;
     private ProgressBar progressBar;
     private String urlAux = null;
@@ -105,7 +98,7 @@ public class AddStock extends AppCompatActivity {
         codigoProducto = findViewById(R.id.codigoProducto);
         nombreProducto = findViewById(R.id.nombreProducto);
         marcaProducto = findViewById(R.id.marcaProducto);
-        tomoDoble = findViewById(R.id.isTomoDoble);
+        tomoDoble = findViewById(R.id.selecTipoTomo);
         cantidad = findViewById(R.id.cantidad);
         precio = findViewById(R.id.precio);
         descripcion = findViewById(R.id.descripcion);
@@ -140,35 +133,30 @@ public class AddStock extends AppCompatActivity {
         btnGuardarProducto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (TextUtils.isEmpty(binding.codigoProducto.getText().toString()) || TextUtils.isEmpty(binding.nombreProducto.getText().toString()) ||
-                        TextUtils.isEmpty(binding.marcaProducto.getText().toString()) || TextUtils.isEmpty(binding.cantidad.getText().toString()) ||
-                        TextUtils.isEmpty(binding.precio.getText().toString())) {
-                    Toast.makeText(getApplicationContext(), "Complete la informacion importante", Toast.LENGTH_SHORT).show();
-                    return;  // Salir del método si algún campo está vacío
-                }else{
+                if (imagenUri != null) {
                     toggleProgressBar(true);
-                    String codigoProductoStr = binding.codigoProducto.getText().toString();
-                    if(urlAux!=null){
-                        guardarProductoEnFirebase(codigoProductoStr, urlAux);
-                    } else if (imagenUri != null) {
-                        // Obtener la referencia del almacenamiento en Firebase con la carpeta "imagenes_productos" y el nombre del archivo como el código del producto
-                        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("imagenes_productos/" + codigoProductoStr);
 
-                        // Subir la imagen al Storage
-                        storageRef.putFile(imagenUri)
-                                .addOnSuccessListener(taskSnapshot -> {
-                                    // La imagen se ha subido exitosamente, obtén la URL de descarga
-                                    obtenerURLDescarga(storageRef, codigoProductoStr);
-                                })
-                                .addOnFailureListener(e -> {
-                                    // Handle unsuccessful uploads
-                                    Toast.makeText(getApplicationContext(), "Error al subir la imagen", Toast.LENGTH_SHORT).show();
-                                    toggleProgressBar(false);
-                                });
-                    }else {
-                        Toast.makeText(getApplicationContext(), "Debe añadir una foto", Toast.LENGTH_SHORT).show();
-                        toggleProgressBar(false);
-                    }
+                    // Obtener el código del producto
+                    String codigoProductoStr = codigoProducto.getText().toString();
+
+                    // Obtener la referencia del almacenamiento en Firebase con la carpeta "imagenes_productos" y el nombre del archivo como el código del producto
+                    StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("imagenes_productos/" + codigoProductoStr);
+
+                    // Subir la imagen al Storage
+                    storageRef.putFile(imagenUri)
+                            .addOnSuccessListener(taskSnapshot -> {
+                                // La imagen se ha subido exitosamente, obtén la URL de descarga
+                                obtenerURLDescarga(storageRef, codigoProductoStr);
+                            })
+                            .addOnFailureListener(e -> {
+                                // Handle unsuccessful uploads
+                                Toast.makeText(getApplicationContext(), "Error al subir la imagen", Toast.LENGTH_SHORT).show();
+                                toggleProgressBar(false);
+                            });
+                } else if(urlAux!=null){
+                    guardarProductoEnFirebase(codigoProducto.getText().toString(),urlAux);
+                }else{
+                    Toast.makeText(getApplicationContext(), "Debe añadir una foto", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -180,6 +168,63 @@ public class AddStock extends AppCompatActivity {
                 mostrarDialogoBusqueda();
             }
         });
+
+        binding.btnEliminarProducto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(urlAux!=null){
+                    mostrarConfirmacionDialog();
+                }else{
+                    Toast.makeText(getApplicationContext(), "Debe seleccionar un producto existente en sistema", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void mostrarConfirmacionDialog() {
+        // Supongamos que "codigoProducto" y "nombreProducto" son las variables que contienen la información del producto
+        final String codigoProducto = binding.codigoProducto.getText().toString();
+        final String nombreProducto = binding.nombreProducto.getText().toString();
+
+        // Crea un cuadro de diálogo de confirmación
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Confirmar Eliminación");
+        builder.setMessage("¿Seguro que desea eliminar el producto '" + nombreProducto + "' de código '" + codigoProducto + "'?");
+
+        // Agrega los botones "Sí" y "Cancelar" al cuadro de diálogo
+        builder.setPositiveButton("ELIMINAR", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // Si el usuario hace clic en "Sí", elimina el producto
+                eliminarProducto(codigoProducto);
+            }
+        });
+
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // Si el usuario hace clic en "Cancelar", cierra el cuadro de diálogo sin hacer nada
+                dialogInterface.dismiss();
+            }
+        });
+
+        // Muestra el cuadro de diálogo
+        builder.show();
+    }
+
+    private void eliminarProducto(String codigoProducto) {
+        toggleProgressBar(true);
+        DatabaseReference productoEliminarRef = FirebaseDatabase.getInstance().getReference("productos").child(codigoProducto);
+        productoEliminarRef.removeValue();
+        binding.codigoProducto.setText("");
+        binding.cantidad.setText("");
+        binding.descripcion.setText("");
+        binding.marcaProducto.setText("");
+        binding.precio.setText("");
+        binding.imagenProducto.setImageResource(R.drawable.placeholder_image);
+        urlAux=null;
+        Toast.makeText(getApplicationContext(), "PRODUCTO ELIMINADO", Toast.LENGTH_SHORT).show();
+        toggleProgressBar(false);
     }
 
 
@@ -261,8 +306,8 @@ public class AddStock extends AppCompatActivity {
     private void guardarProductoEnFirebase(String codigoProducto, String urlDescarga) {
         // Crear un objeto Producto con todos los datos, incluida la URL de descarga de la imagen
         Producto producto = new Producto(codigoProducto, nombreProducto.getText().toString(), marcaProducto.getText().toString(),
-                Integer.parseInt( precio.getText().toString()),tomoDoble.isChecked(),
-                Integer.parseInt(cantidad.getText().toString()), descripcion.getText().toString(), spinner.getSelectedItem().toString(), urlDescarga);
+                Integer.parseInt(cantidad.getText().toString()), descripcion.getText().toString(),
+                spinner.getSelectedItem().toString(),urlDescarga,Integer.parseInt( precio.getText().toString()) , binding.selecTipoTomo.getSelectedItem().toString());
 
         // Obtener la referencia a la base de datos en Firebase
         DatabaseReference productosRef = FirebaseDatabase.getInstance().getReference("productos");
@@ -273,11 +318,44 @@ public class AddStock extends AppCompatActivity {
                     // Éxito al guardar el producto
                     Toast.makeText(getApplicationContext(), "Producto guardado exitosamente", Toast.LENGTH_SHORT).show();
                     binding.codigoProducto.setText("");
-                    binding.cantidad.setText("1");
+                    binding.cantidad.setText("");
                     binding.descripcion.setText("");
                     binding.marcaProducto.setText("");
-                    binding.precio.setText("0");
+                    binding.precio.setText("");
                     binding.imagenProducto.setImageResource(R.drawable.placeholder_image);
+                    //MODIFICAR PRECIO DE LOS MANGAS CUANDO SE CUMPLAN LAS CONDICIONES ESTABLECIDAS POR EL CLIENTE.
+                    if(producto.getCategoria().equals("Mangas") && ( producto.getMarca().equalsIgnoreCase("Ivrea") || producto.getMarca().equalsIgnoreCase("Panini"))
+                            && (producto.getTipoTomo().equalsIgnoreCase("Tomo Simple") || producto.getTipoTomo().equalsIgnoreCase("Tomo Doble"))){
+                        Toast.makeText(getApplicationContext(), "Modificando precios de mangas coincidentes", Toast.LENGTH_SHORT).show();
+
+                        DatabaseReference preciosRef = FirebaseDatabase.getInstance().getReference("precios");
+
+                        // Consultar productos con la misma marca y tipo de tomo
+                        preciosRef.orderByChild("marca").equalTo(producto.getMarca())
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                            Producto productoRelacionado = snapshot.getValue(Producto.class);
+
+                                            if (productoRelacionado != null &&
+                                                    productoRelacionado.getTipoTomo().equalsIgnoreCase(producto.getTipoTomo())) {
+                                                // Modificar el precio del producto relacionado
+                                                int nuevoPrecio = Integer.parseInt(precio.getText().toString());
+                                                productoRelacionado.setPrecio(nuevoPrecio);
+
+                                                // Actualizar el precio en Firebase
+                                                preciosRef.child(snapshot.getKey()).setValue(productoRelacionado);
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                        // Manejar el error en la consulta
+                                    }
+                                });
+                    }
                     urlAux=null;
                     toggleProgressBar(false);
                 })
@@ -339,6 +417,21 @@ public class AddStock extends AppCompatActivity {
                     } else {
                         // Manejar el caso en el que el elemento no se encuentre en la lista
                         Toast.makeText(getApplicationContext(), "La categoria no coincide", Toast.LENGTH_SHORT).show();
+                    }
+                    opciones = getResources().getStringArray(R.array.opciones_tipoTomo);
+                    posicionSeleccionada = -1;
+                    for (int i = 0; i < opciones.length; i++) {
+                        if (opciones[i].equals(productoExistente.getTipoTomo())) {
+                            posicionSeleccionada = i;
+                            break;  // Detener la búsqueda una vez encontrado
+                        }
+                    }
+                    if (posicionSeleccionada != -1) {
+                        // Seleccionar el elemento en el Spinner
+                        tomoDoble.setSelection(posicionSeleccionada);
+                    } else {
+                        // Manejar el caso en el que el elemento no se encuentre en la lista
+                        Toast.makeText(getApplicationContext(), "El tipo de tomo no coincide", Toast.LENGTH_SHORT).show();
                     }
 
                     Picasso.get().load(productoExistente.getUrlImagen()).into(binding.imagenProducto);
