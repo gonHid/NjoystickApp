@@ -88,6 +88,11 @@ public class AddStock extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Utilizar la clase de binding correcta
+        if (!isTaskRoot() && getIntent().hasCategory(Intent.CATEGORY_LAUNCHER) && getIntent().getAction() != null &&
+                getIntent().getAction().equals(Intent.ACTION_MAIN)) {
+            finish();
+            return;
+        }
         binding = AddStockBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         adapterSearch =  new ProductAdapter(this, new ArrayList<>());
@@ -155,6 +160,7 @@ public class AddStock extends AppCompatActivity {
                                     toggleProgressBar(false);
                                 });
                     } else if(urlAux!=null){
+                        toggleProgressBar(true);
                         guardarProductoEnFirebase(codigoProducto.getText().toString(),urlAux);
                     }else{
                         Toast.makeText(getApplicationContext(), "Debe añadir una foto", Toast.LENGTH_SHORT).show();
@@ -330,10 +336,10 @@ public class AddStock extends AppCompatActivity {
                             && (producto.getTipoTomo().equalsIgnoreCase("Tomo Simple") || producto.getTipoTomo().equalsIgnoreCase("Tomo Doble"))){
                         Toast.makeText(getApplicationContext(), "Modificando precios de mangas coincidentes", Toast.LENGTH_SHORT).show();
 
-                        DatabaseReference preciosRef = FirebaseDatabase.getInstance().getReference("precios");
+                        DatabaseReference prodRef = FirebaseDatabase.getInstance().getReference("productos");
 
                         // Consultar productos con la misma marca y tipo de tomo
-                        preciosRef.orderByChild("marca").equalTo(producto.getMarca())
+                        prodRef.orderByChild("marca").equalTo(producto.getMarca())
                                 .addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -343,11 +349,11 @@ public class AddStock extends AppCompatActivity {
                                             if (productoRelacionado != null &&
                                                     productoRelacionado.getTipoTomo().equalsIgnoreCase(producto.getTipoTomo())) {
                                                 // Modificar el precio del producto relacionado
-                                                int nuevoPrecio = Integer.parseInt(precio.getText().toString());
+                                                int nuevoPrecio =producto.getPrecio();
                                                 productoRelacionado.setPrecio(nuevoPrecio);
 
                                                 // Actualizar el precio en Firebase
-                                                preciosRef.child(snapshot.getKey()).setValue(productoRelacionado);
+                                                prodRef.child(snapshot.getKey()).setValue(productoRelacionado);
                                             }
                                         }
                                     }
