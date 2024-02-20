@@ -133,30 +133,32 @@ public class AddStock extends AppCompatActivity {
         btnGuardarProducto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (imagenUri != null) {
-                    toggleProgressBar(true);
-
-                    // Obtener el código del producto
-                    String codigoProductoStr = codigoProducto.getText().toString();
-
-                    // Obtener la referencia del almacenamiento en Firebase con la carpeta "imagenes_productos" y el nombre del archivo como el código del producto
-                    StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("imagenes_productos/" + codigoProductoStr);
-
-                    // Subir la imagen al Storage
-                    storageRef.putFile(imagenUri)
-                            .addOnSuccessListener(taskSnapshot -> {
-                                // La imagen se ha subido exitosamente, obtén la URL de descarga
-                                obtenerURLDescarga(storageRef, codigoProductoStr);
-                            })
-                            .addOnFailureListener(e -> {
-                                // Handle unsuccessful uploads
-                                Toast.makeText(getApplicationContext(), "Error al subir la imagen", Toast.LENGTH_SHORT).show();
-                                toggleProgressBar(false);
-                            });
-                } else if(urlAux!=null){
-                    guardarProductoEnFirebase(codigoProducto.getText().toString(),urlAux);
+                String codigoProductoStr = codigoProducto.getText().toString();
+                if(codigoProductoStr.trim().isEmpty()){
+                    Toast.makeText(getApplicationContext(), "INGRESE PRIMERO EL CODIGO A TRABAJAR", Toast.LENGTH_SHORT).show();
                 }else{
-                    Toast.makeText(getApplicationContext(), "Debe añadir una foto", Toast.LENGTH_SHORT).show();
+                    if (imagenUri != null) {
+                        toggleProgressBar(true);
+
+                        // Obtener la referencia del almacenamiento en Firebase con la carpeta "imagenes_productos" y el nombre del archivo como el código del producto
+                        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("imagenes_productos/" + codigoProductoStr);
+
+                        // Subir la imagen al Storage
+                        storageRef.putFile(imagenUri)
+                                .addOnSuccessListener(taskSnapshot -> {
+                                    // La imagen se ha subido exitosamente, obtén la URL de descarga
+                                    obtenerURLDescarga(storageRef, codigoProductoStr);
+                                })
+                                .addOnFailureListener(e -> {
+                                    // Handle unsuccessful uploads
+                                    Toast.makeText(getApplicationContext(), "Error al subir la imagen", Toast.LENGTH_SHORT).show();
+                                    toggleProgressBar(false);
+                                });
+                    } else if(urlAux!=null){
+                        guardarProductoEnFirebase(codigoProducto.getText().toString(),urlAux);
+                    }else{
+                        Toast.makeText(getApplicationContext(), "Debe añadir una foto", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
