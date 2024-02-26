@@ -365,14 +365,18 @@ public class AddStock extends AppCompatActivity {
                                 });
                     }
                     urlAux=null;
+                    imagenUri=null;
                     toggleProgressBar(false);
                 })
                 .addOnFailureListener(e -> {
                     // Error al guardar el producto
                     Toast.makeText(getApplicationContext(), "Error al guardar el producto", Toast.LENGTH_SHORT).show();
                     urlAux=null;
+                    imagenUri=null;
                     toggleProgressBar(false);
                 });
+        urlAux=null;
+        imagenUri=null;
     }
 
     @Override
@@ -444,9 +448,11 @@ public class AddStock extends AppCompatActivity {
 
                     Picasso.get().load(productoExistente.getUrlImagen()).into(binding.imagenProducto);
                     urlAux = productoExistente.getUrlImagen();
+                    imagenUri = null;
                 } else {
                     // El producto no existe en la base de datos
                     Toast.makeText(getApplicationContext(), "Ingresará un nuevo producto", Toast.LENGTH_SHORT).show();
+                    imagenUri = null;
                 }
                 toggleProgressBar(false);
             }
@@ -459,13 +465,6 @@ public class AddStock extends AppCompatActivity {
         });
     }
 
-    // Obtener la URI de una imagen a partir de un Bitmap
-    private Uri getImageUri(Context context, Bitmap bitmap) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, "Title", null);
-        return Uri.parse(path);
-    }
 
     public void escanear() {
         ScanOptions options = new ScanOptions();
