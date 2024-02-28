@@ -171,6 +171,7 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
                         // Limpiar producto almacenado
                         productoStored = null;
                         Toast.makeText(getApplicationContext(), "Compra confirmada con éxito", Toast.LENGTH_SHORT).show();
+                        VentasReport.setMontoTotal(0);
                         if(nuevaCantidad==0){
                             // Inflar la vista del Toast personalizado
                             LayoutInflater inflater = getLayoutInflater();
@@ -189,6 +190,7 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
                     } else {
 
                         Toast.makeText(getApplicationContext(), "Stock insuficiente", Toast.LENGTH_SHORT).show();
+                        VentasReport.setMontoTotal(0);
                     }
                 } else {
                     Toast.makeText(getApplicationContext(), "Debe buscar un nuevo producto", Toast.LENGTH_SHORT).show();
@@ -216,10 +218,12 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
                 guardarEstadoVentaEnCurso(false);
 
                 Toast.makeText(getApplicationContext(), "Compra confirmada con éxito", Toast.LENGTH_SHORT).show();
+                VentasReport.setMontoTotal(0);
             }
 
         } else {
             Toast.makeText(getApplicationContext(), "Adaptador nulo", Toast.LENGTH_SHORT).show();
+            VentasReport.setMontoTotal(0);
         }
 
         toggleProgressBar(false);
@@ -262,6 +266,7 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
             limpiarCampos();
             guardarEstadoVentaEnCurso(false);
             Toast.makeText(getApplicationContext(), "Venta cancelada", Toast.LENGTH_SHORT).show();
+            VentasReport.setMontoTotal(0);
             finish();
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "Error al cancelar la venta: " + e.getMessage(), Toast.LENGTH_SHORT).show();
