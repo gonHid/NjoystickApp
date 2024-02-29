@@ -9,15 +9,6 @@
     android:padding="20dp"
     tools:context=".ReporteVentas">
 
-    <com.github.mikephil.charting.charts.PieChart
-        android:id="@+id/grafico"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/opcionReporte" />
-
     <Spinner
         android:id="@+id/opcionReporte"
         android:layout_width="match_parent"
@@ -38,13 +29,11 @@
 
     <ListView
         android:id="@+id/listaVentas"
-        android:layout_width="match_parent"
-        android:layout_height="260dp"
-        android:layout_marginTop="4dp"
+        android:layout_width="372dp"
+        android:layout_height="425dp"
         app:layout_constraintBottom_toTopOf="@+id/goBack"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/grafico" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/goBack"
@@ -55,6 +44,74 @@
         app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/textTotalVenta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="MONTO TOTAL: $000000"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/opcionReporte" />
+
+    <TextView
+        android:id="@+id/textMontoMangas"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="24dp"
+        android:text="Mangas: $000000"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@+id/textMontoJuegos"
+        app:layout_constraintHorizontal_bias="0.39"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textTotalVenta" />
+
+    <TextView
+        android:id="@+id/textMontoJuegos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="56dp"
+        android:text="Juegos: $000000"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textTotalVenta" />
+
+    <TextView
+        android:id="@+id/textMontoOtros"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="78dp"
+        android:layout_marginTop="20dp"
+        android:text="Otros: $000000"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/textMontoPapeleria"
+        app:layout_constraintTop_toBottomOf="@+id/textMontoMangas" />
+
+    <TextView
+        android:id="@+id/textMontoFiguras"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Figuras: $000000"
+        app:layout_constraintEnd_toStartOf="@+id/textMontoPapeleria"
+        app:layout_constraintHorizontal_bias="0.31"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textMontoMangas" />
+
+    <TextView
+        android:id="@+id/textMontoPapeleria"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Papeleria: $000000"
+        app:layout_constraintTop_toBottomOf="@+id/textMontoJuegos"
+        tools:layout_editor_absoluteX="137dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

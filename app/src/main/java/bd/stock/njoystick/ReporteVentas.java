@@ -20,9 +20,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import bd.stock.njoystick.Models.ProductoVenta;
 import bd.stock.njoystick.Models.Ventas;
@@ -32,7 +34,7 @@ public class ReporteVentas extends AppCompatActivity {
     private ArrayAdapter<String> listaProductosAdapter;
     private ArrayList<Ventas> listaVentas = new ArrayList<>();
     private ArrayList<ProductoVenta> listaFiltrada = new ArrayList<>();
-    int totalMangas = 0, totalVideoJuegos = 0, totalFiguras = 0, totalVarios = 0;
+    int totalMangas = 0, totalVideoJuegos = 0, totalFiguras = 0, totalVarios = 0, totalPapeleria =0, totalFinal = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,39 +95,52 @@ public class ReporteVentas extends AppCompatActivity {
         totalVideoJuegos = 0;
         totalFiguras = 0;
         totalVarios = 0;
-
+        totalPapeleria = 0;
+        totalFinal = 0;
         for (Ventas venta : listaVentas) {
             if (fechaMismoDia(venta.getFecha()) && "Diario".equals(binding.opcionReporte.getSelectedItem().toString())) {
                 listaFiltrada.addAll(venta.getListaProductosVenta());
+                listaProductosAdapter.add(formatProducto(venta));
                 for (ProductoVenta pv : venta.getListaProductosVenta()) {
-                    listaProductosAdapter.add(formatProducto(pv));
                     sumarMontos(pv);
                 }
             }
             if (fechaMismaSemana(venta.getFecha()) && "Semanal".equals(binding.opcionReporte.getSelectedItem().toString())) {
                 listaFiltrada.addAll(venta.getListaProductosVenta());
+                listaProductosAdapter.add(formatProducto(venta));
                 for (ProductoVenta pv : venta.getListaProductosVenta()) {
-                    listaProductosAdapter.add(formatProducto(pv));
                     sumarMontos(pv);
                 }
             }
             if (fechaMismoMes(venta.getFecha()) && "Mensual".equals(binding.opcionReporte.getSelectedItem().toString())) {
                 listaFiltrada.addAll(venta.getListaProductosVenta());
+                listaProductosAdapter.add(formatProducto(venta));
                 for (ProductoVenta pv : venta.getListaProductosVenta()) {
-                    listaProductosAdapter.add(formatProducto(pv));
                     sumarMontos(pv);
                 }
             }
+            totalFinal = venta.getMontoTotal();
         }
         listaProductosAdapter.notifyDataSetChanged();
-        generarGrafico();
+        binding.textTotalVenta.setText("MONTO TOTAL: $"+totalFinal);
+        binding.textMontoFiguras.setText("Figuras: $"+totalFiguras);
+        binding.textMontoJuegos.setText("MONTO TOTAL: $"+totalVideoJuegos);
+        binding.textMontoMangas.setText("Figuras: $"+totalMangas);
+        binding.textMontoPapeleria.setText("MONTO TOTAL: $"+totalPapeleria);
+        binding.textMontoOtros.setText("MONTO TOTAL: $"+totalVarios);
+
+       // generarGrafico();
     }
 
-    private String formatProducto(ProductoVenta pv) {
-        // Formatear el producto como desees para mostrarlo en la lista
-        return pv.producto.getNombre() + " " + pv.producto.getMarca() + " cantidad: " + pv.cantidad;
-    }
+    private String formatProducto(Ventas v) {
+        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy HH:mm", new Locale("es", "CL"));
 
+        // Formatea la fecha y hora
+        String fechaFormateada = formato.format(v.getFecha());
+
+        return fechaFormateada + " \n   monto: " + v.getMontoTotal();
+    }
+/*
     private void generarGrafico() {
         // Configuración del gráfico
         //binding.grafico.setUsePercentValues(true);
@@ -165,7 +180,7 @@ public class ReporteVentas extends AppCompatActivity {
         binding.grafico.animateY(1300);
         // Actualiza la vista del gráfico
         binding.grafico.invalidate();
-    }
+    }*/
 
     private void sumarMontos(ProductoVenta pv) {
         switch (pv.producto.getCategoria()) {
@@ -177,6 +192,9 @@ public class ReporteVentas extends AppCompatActivity {
                 break;
             case "Figuras":
                 totalFiguras += (pv.cantidad * pv.producto.getPrecio());
+                break;
+            case "Papeleria":
+                totalPapeleria += (pv.cantidad * pv.producto.getPrecio());
                 break;
             default:
                 totalVarios += (pv.cantidad * pv.producto.getPrecio());
