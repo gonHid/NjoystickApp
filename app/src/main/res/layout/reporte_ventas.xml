@@ -110,8 +110,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="Papeleria: $000000"
-        app:layout_constraintTop_toBottomOf="@+id/textMontoJuegos"
-        tools:layout_editor_absoluteX="137dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textMontoJuegos" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
