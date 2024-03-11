@@ -172,6 +172,7 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
                         productoStored = null;
                         Toast.makeText(getApplicationContext(), "Compra confirmada con éxito", Toast.LENGTH_SHORT).show();
                         VentasReport.setMontoTotal(0);
+                        binding.totalVenta.setText("TOTAL VENTA: $");
                         if(nuevaCantidad==0){
                             // Inflar la vista del Toast personalizado
                             LayoutInflater inflater = getLayoutInflater();
@@ -219,6 +220,7 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
 
                 Toast.makeText(getApplicationContext(), "Compra confirmada con éxito", Toast.LENGTH_SHORT).show();
                 VentasReport.setMontoTotal(0);
+                binding.totalVenta.setText("TOTAL VENTA: $");
             }
 
         } else {

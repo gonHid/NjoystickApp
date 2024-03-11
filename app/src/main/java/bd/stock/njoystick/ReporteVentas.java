@@ -91,6 +91,7 @@ public class ReporteVentas extends AppCompatActivity {
 
     private void filtrarVentas() {
         listaProductosAdapter.clear();
+        listaFiltrada.clear();
         totalMangas = 0;
         totalVideoJuegos = 0;
         totalFiguras = 0;
@@ -119,15 +120,15 @@ public class ReporteVentas extends AppCompatActivity {
                     sumarMontos(pv);
                 }
             }
-            totalFinal = venta.getMontoTotal();
+            totalFinal += venta.getMontoTotal();
         }
         listaProductosAdapter.notifyDataSetChanged();
         binding.textTotalVenta.setText("MONTO TOTAL: $"+totalFinal);
         binding.textMontoFiguras.setText("Figuras: $"+totalFiguras);
-        binding.textMontoJuegos.setText("MONTO TOTAL: $"+totalVideoJuegos);
-        binding.textMontoMangas.setText("Figuras: $"+totalMangas);
-        binding.textMontoPapeleria.setText("MONTO TOTAL: $"+totalPapeleria);
-        binding.textMontoOtros.setText("MONTO TOTAL: $"+totalVarios);
+        binding.textMontoJuegos.setText("Videojuegos: $"+totalVideoJuegos);
+        binding.textMontoMangas.setText("Mangas: $"+totalMangas);
+        binding.textMontoPapeleria.setText("Papeleria: $"+totalPapeleria);
+        binding.textMontoOtros.setText("Otros: $"+totalVarios);
 
        // generarGrafico();
     }
@@ -138,7 +139,15 @@ public class ReporteVentas extends AppCompatActivity {
         // Formatea la fecha y hora
         String fechaFormateada = formato.format(v.getFecha());
 
-        return fechaFormateada + " \n   monto: " + v.getMontoTotal();
+        // Agrega información de los productos vendidos
+        StringBuilder productosVendidos = new StringBuilder("Productos vendidos:\n");
+        for (ProductoVenta pv : v.getListaProductosVenta()) {
+            productosVendidos.append("   - ").append(pv.producto.getNombre()).append(": ").append(pv.cantidad).append(" unidades")
+                    .append("   $"+(pv.producto.getPrecio()*pv.cantidad)).append("\n");
+        }
+
+
+        return "\n"+fechaFormateada + "       Monto: $" + v.getMontoTotal() + "\n" + productosVendidos.toString();
     }
 /*
     private void generarGrafico() {
