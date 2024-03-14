@@ -1,13 +1,17 @@
 package bd.stock.njoystick;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -16,6 +20,8 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.common.reflect.TypeToken;
 import com.google.firebase.database.DataSnapshot;
@@ -34,6 +40,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import bd.stock.njoystick.Models.ProductAdapter;
 import bd.stock.njoystick.Models.Producto;
 import bd.stock.njoystick.Models.ProductoVenta;
 import bd.stock.njoystick.Models.Ventas;
@@ -49,6 +56,10 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
     private ArrayList<ProductoVenta> ControlStock = new ArrayList<>();
     private Ventas VentasReport;
     private Producto productoStored = null;
+    private AlertDialog alertDialog;
+    private EditText editTextBuscar;
+    private RecyclerView recyclerView;
+    private ProductAdapter adapterSearch;
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(), result -> {
         if (result.getContents() == null) {
             Toast.makeText(this, "CANCELADO", Toast.LENGTH_SHORT).show();
@@ -68,13 +79,13 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
         // Inicializa el ArrayAdapter y asócialo con el ListView
         listaProductosAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
         binding.listaProductos.setAdapter(listaProductosAdapter);
-
+        adapterSearch =  new ProductAdapter(this, new ArrayList<>());
         VentasReport = new Ventas();
         binding.btnLeerCodigo.setOnClickListener(view -> escanear());
         binding.btnAddALista.setOnClickListener(view -> enviarALista());
         binding.btnRealizarVenta.setOnClickListener(view -> aceptarCompra());
         binding.btnCancelarVenta.setOnClickListener(view -> cancelarCompra());
-        binding.btnIngresoManual.setOnClickListener(view -> abrirDialog());
+        binding.btnIngresoManual.setOnClickListener(view -> mostrarDialogoBusqueda());
         if (ventaEnCurso()) {
             restaurarControlStock();
         }
@@ -399,5 +410,119 @@ public class Venta extends AppCompatActivity implements InputCodigoDialog.OnInpu
         binding.textViewNombreProducto.setText("");
         binding.editTextCantidad.setText("");
         binding.textViewPrecio.setText("");
+    }
+
+
+    //AÑADIENDO BUSCADOR POR NOMBRE
+    private void mostrarDialogoBusqueda() {
+        runOnUiThread(() -> {
+            // Inflar el diseño personalizado
+            View dialogView = getLayoutInflater().inflate(R.layout.dialog_buscar_por_nombre, null);
+
+            // Obtener referencias de widgets
+            editTextBuscar = dialogView.findViewById(R.id.editTextBuscar);
+            recyclerView = dialogView.findViewById(R.id.recyclerView);
+
+            // Configurar el RecyclerView
+            recyclerView.setLayoutManager(new LinearLayoutManager(Venta.this));
+            recyclerView.setAdapter(adapterSearch);
+
+            // Configurar el EditText para la búsqueda en tiempo real
+            editTextBuscar.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    // Realizar la búsqueda en tiempo real
+                    buscarCoincidencias(charSequence.toString());
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+                }
+            });
+
+            // Configurar el listener para mostrar el código al seleccionar un nombre en el RecyclerView
+            adapterSearch.setOnItemClickListener((view, position) -> {
+                Producto selectedProduct = adapterSearch.getItem(position);
+                if (selectedProduct != null) {
+                    String selectedProductCode = selectedProduct.getCodigo();
+
+                    obtenerInformacionProducto(selectedProductCode);
+
+                    //Toast.makeText(AddStock.this, "Código del producto: " + selectedProductCode, Toast.LENGTH_SHORT).show();
+                    alertDialog.dismiss();  // Cerrar el diálogo después de seleccionar
+                }
+            });
+
+            // Cargar la lista completa de productos
+            cargarListaProductos(adapterSearch);
+
+            // Configurar el diálogo
+            AlertDialog.Builder builder = new AlertDialog.Builder(Venta.this);
+            builder.setView(dialogView);
+            alertDialog = builder.create();
+            alertDialog.show();
+        });
+    }
+
+    // Nuevo método para buscar coincidencias en tiempo real
+    private void buscarCoincidencias(String searchText) {
+        DatabaseReference productosRef = FirebaseDatabase.getInstance().getReference("productos");
+
+        productosRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<Producto> productosCoincidentes = new ArrayList<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Producto producto = snapshot.getValue(Producto.class);
+                    if (producto != null) {
+                        // Filtrar localmente para obtener posibles coincidencias
+                        if (producto.getNombre().toLowerCase().contains(searchText.toLowerCase())) {
+                            // Agregar el objeto Producto completo a la lista de coincidencias
+                            productosCoincidentes.add(producto);
+                        }
+                    }
+                }
+
+                adapterSearch.clear();
+                adapterSearch.addAll(productosCoincidentes);
+                adapterSearch.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getApplicationContext(), "Error al leer datos de Firebase", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+    private void cargarListaProductos(ProductAdapter adapter) {
+        DatabaseReference productosRef = FirebaseDatabase.getInstance().getReference("productos");
+
+        productosRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<Producto> productos = new ArrayList<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Producto producto = snapshot.getValue(Producto.class);
+                    if (producto != null) {
+                        productos.add(producto);
+                    }
+                }
+
+                adapter.clear();
+                adapter.addAll(productos);
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getApplicationContext(), "Error al leer datos de Firebase", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

@@ -527,7 +527,7 @@ public class AddStock extends AppCompatActivity {
                 Producto selectedProduct = adapterSearch.getItem(position);
                 if (selectedProduct != null) {
                     String selectedProductCode = selectedProduct.getCodigo();
-                    // Puedes mostrar el código como desees
+
                     binding.codigoProducto.setText(selectedProductCode);
                     verificarExistenciaEnFirebase(selectedProductCode);
 
