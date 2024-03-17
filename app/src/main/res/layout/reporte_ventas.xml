@@ -60,12 +60,10 @@
         android:id="@+id/textMontoMangas"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="52dp"
+        android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
         android:text="Mangas: $000000"
         android:textSize="14sp"
-        app:layout_constraintEnd_toStartOf="@+id/textMontoJuegos"
-        app:layout_constraintHorizontal_bias="0.39"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textTotalVenta" />
 
@@ -74,7 +72,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:layout_marginEnd="56dp"
+        android:layout_marginEnd="36dp"
         android:text="Juegos: $000000"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"

@@ -105,6 +105,7 @@ public class ReporteVentas extends AppCompatActivity {
                 for (ProductoVenta pv : venta.getListaProductosVenta()) {
                     sumarMontos(pv);
                 }
+                totalFinal += venta.getMontoTotal();
             }
             if (fechaMismaSemana(venta.getFecha()) && "Semanal".equals(binding.opcionReporte.getSelectedItem().toString())) {
                 listaFiltrada.addAll(venta.getListaProductosVenta());
@@ -112,6 +113,7 @@ public class ReporteVentas extends AppCompatActivity {
                 for (ProductoVenta pv : venta.getListaProductosVenta()) {
                     sumarMontos(pv);
                 }
+                totalFinal += venta.getMontoTotal();
             }
             if (fechaMismoMes(venta.getFecha()) && "Mensual".equals(binding.opcionReporte.getSelectedItem().toString())) {
                 listaFiltrada.addAll(venta.getListaProductosVenta());
@@ -119,8 +121,8 @@ public class ReporteVentas extends AppCompatActivity {
                 for (ProductoVenta pv : venta.getListaProductosVenta()) {
                     sumarMontos(pv);
                 }
+                totalFinal += venta.getMontoTotal();
             }
-            totalFinal += venta.getMontoTotal();
         }
         listaProductosAdapter.notifyDataSetChanged();
         binding.textTotalVenta.setText("MONTO TOTAL: $"+totalFinal);
