@@ -76,6 +76,10 @@
             android:exported="true">
         </activity>
 
+        <activity
+            android:name=".CambiaStock0"
+            android:exported="true">
+        </activity>
     </application>
 
 </manifest>

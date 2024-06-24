@@ -23,15 +23,15 @@
 
     <Button
         android:id="@+id/changeAnnadirStock"
+        style="@style/MyButtonStyleB"
         android:layout_width="181dp"
         android:layout_height="96dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="176dp"
-        app:backgroundTint="@null"
-        style="@style/MyButtonStyleB"
         android:elevation="15dp"
         android:text="AÑADIR STOCK"
         android:textSize="32sp"
+        app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imagenProducto"
@@ -73,9 +73,9 @@
 
     <ImageView
         android:id="@+id/imagenProducto"
-        android:layout_width="339dp"
-        android:layout_height="413dp"
-        android:layout_marginBottom="344dp"
+        android:layout_width="271dp"
+        android:layout_height="327dp"
+        android:layout_marginBottom="444dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -90,5 +90,19 @@
         android:text="Dark Mode"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btn_Stock0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="61dp"
+        android:text="cambiar stock a 0"
+        android:backgroundTint="@color/design_default_color_error"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.144"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/changeAnnadirStock"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
